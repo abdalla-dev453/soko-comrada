@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------------------------------------------------------------------
+   Theme tokens. Values are "R G B" triplets (no rgb() wrapper) so
+   Tailwind's rgb(var(--x) / <alpha-value>) pattern in tailwind.config.js
+   can apply opacity modifiers like bg-surface/60.
+   ------------------------------------------------------------------- */
+:root {
+  --color-bg: 237 241 240; /* mist */
+  --color-surface: 255 255 255;
+  --color-surface-raised: 255 255 255;
+  --color-ink: 20 36 32; /* ink */
+  --color-ink-muted: 100 112 107;
+  --color-border: 219 227 223;
+}
+
+.dark {
+  --color-bg: 15 24 21; /* deep pine */
+  --color-surface: 22 34 30;
+  --color-surface-raised: 28 42 37;
+  --color-ink: 237 243 240;
+  --color-ink-muted: 154 168 161;
+  --color-border: 42 58 51;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-bg text-ink font-body antialiased;
+    font-feature-settings: "ss01" 1;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display text-ink;
+  }
+
+  /* Visible keyboard focus everywhere — never suppressed. */
+  :focus-visible {
+    outline: 2px solid theme("colors.marigold.DEFAULT");
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background-color: theme("colors.marigold.soft");
+    color: theme("colors.ink");
+  }
+
+  /* Respect reduced-motion preferences — Framer Motion components read
+     this too (see utils/motion.js), this covers plain CSS animation. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Ticket-stub gig card: notched left edge via a repeating radial
+     gradient "punch" mask, plus a solid status spine set per-instance
+     via the --spine custom property. This is the one recurring
+     structural motif in the whole UI — everything else stays quiet. */
+  .ticket {
+    position: relative;
+    border-radius: theme("borderRadius.ticket");
+    background-image: radial-gradient(
+      circle at 0 50%,
+      transparent 0,
+      transparent 6px,
+      transparent 6px
+    );
+  }
+
+  .ticket::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 6px;
+    background-color: var(--spine, theme("colors.moss.DEFAULT"));
+    border-top-left-radius: theme("borderRadius.ticket");
+    border-bottom-left-radius: theme("borderRadius.ticket");
+  }
+
+  .ticket::after {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    background: rgb(var(--color-bg));
+    border-radius: 9999px;
+    transform: translate(-50%, -50%);
+  }
+}
+
+@layer utilities {
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
