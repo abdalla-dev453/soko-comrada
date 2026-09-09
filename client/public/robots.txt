@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /gigs/*/applications
+
+Sitemap: https://comradeplug.app/sitemap.xml

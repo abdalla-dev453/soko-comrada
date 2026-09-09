@@ -1,0 +1,27 @@
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url>
+<loc>https://comradeplug.app/</loc>
+<changefreq>weekly</changefreq>
+<priority>1.0</priority>
+</url>
+<url>
+<loc>https://comradeplug.app/about</loc>
+<changefreq>monthly</changefreq>
+<priority>0.6</priority>
+</url>
+<url>
+<loc>https://comradeplug.app/contact</loc>
+<changefreq>monthly</changefreq>
+<priority>0.6</priority>
+</url>
+<url>
+<loc>https://comradeplug.app/privacy</loc>
+<changefreq>yearly</changefreq>
+<priority>0.3</priority>
+</url>
+<url>
+<loc>https://comradeplug.app/terms</loc>
+<changefreq>yearly</changefreq>
+<priority>0.3</priority>
+</url>
+</urlset>
