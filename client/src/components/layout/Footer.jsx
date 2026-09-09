@@ -61,7 +61,7 @@ export function Footer() {
 
         <div className="mt-10 pt-6 border-t border-border flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-fluid-xs text-ink-muted">
-            © {new Date().getFullYear()} Soko Comrada. Built for one campus at a time.
+            © {new Date().getFullYear()} Comrade Plug. Built for one campus at a time.
           </p>
           <p className="text-fluid-xs text-ink-muted">
             MUT - MURANG'A pilot — <a href="mailto:hello@sokocomrada.app" className="underline decoration-dotted">hello@sokocomrada.app</a>

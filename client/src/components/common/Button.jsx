@@ -1,16 +1,16 @@
+import clsx from "clsx";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
-import clsx from "clsx";
 
 import { pressable } from "../../utils/motion";
 
 const VARIANT_CLASSES = {
   primary:
-    "bg-marigold text-ink hover:bg-marigold-strong disabled:hover:bg-marigold shadow-card",
+    "bg-marigold text-[#4A1B0C] hover:bg-marigold-strong disabled:hover:bg-marigold shadow-card",
   secondary:
-    "bg-transparent border border-moss/50 text-ink hover:border-moss hover:bg-moss/10",
+    "bg-transparent border border-ink/20 text-[#C9C9C4] hover:border-ink/40 hover:bg-ink/5",
   ghost: "bg-transparent text-ink hover:bg-ink/5",
-  danger: "bg-coral text-white hover:bg-coral-strong",
+  danger: "bg-marigold text-[#4A1B0C] hover:bg-marigold-strong",
 };
 
 const SIZE_CLASSES = {
@@ -52,14 +52,17 @@ export function Button({
           fullWidth && "w-full",
           VARIANT_CLASSES[variant],
           SIZE_CLASSES[size],
-          className
+          className,
         )}
         {...props}
       >
         {loading ? (
           <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
         ) : (
-          Icon && iconPosition === "left" && <Icon className="h-4 w-4" aria-hidden="true" />
+          Icon &&
+          iconPosition === "left" && (
+            <Icon className="h-4 w-4" aria-hidden="true" />
+          )
         )}
         <span>{children}</span>
         {!loading && Icon && iconPosition === "right" && (

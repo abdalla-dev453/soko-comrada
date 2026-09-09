@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async";
 
-const SITE_NAME = "Soko Comrada";
-const SITE_URL = "https://sokocomrada.app";
+const SITE_NAME = "Comrade Plug";
+const SITE_URL = "https://comradeplug.app";
 const DEFAULT_IMAGE = `${SITE_URL}/og-default.png`;
 
 /**

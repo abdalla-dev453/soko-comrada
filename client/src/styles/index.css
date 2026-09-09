@@ -8,21 +8,21 @@
    can apply opacity modifiers like bg-surface/60.
    ------------------------------------------------------------------- */
 :root {
-  --color-bg: 237 241 240; /* mist */
-  --color-surface: 255 255 255;
+  --color-bg: 246 244 239;
+  --color-surface: 255 253 248;
   --color-surface-raised: 255 255 255;
-  --color-ink: 20 36 32; /* ink */
-  --color-ink-muted: 100 112 107;
-  --color-border: 219 227 223;
+  --color-ink: 28 32 30;
+  --color-ink-muted: 76 84 79;
+  --color-border: 207 211 205;
 }
 
 .dark {
-  --color-bg: 15 24 21; /* deep pine */
-  --color-surface: 22 34 30;
-  --color-surface-raised: 28 42 37;
-  --color-ink: 237 243 240;
-  --color-ink-muted: 154 168 161;
-  --color-border: 42 58 51;
+  --color-bg: 11 13 18;
+  --color-surface: 20 24 32;
+  --color-surface-raised: 27 32 42;
+  --color-ink: 244 242 237;
+  --color-ink-muted: 163 163 156;
+  --color-border: 55 59 68;
 }
 
 @layer base {
@@ -41,6 +41,7 @@
     @apply bg-bg text-ink font-body antialiased;
     font-feature-settings: "ss01" 1;
     text-rendering: optimizeLegibility;
+    font-size: 0.98rem;
   }
 
   h1,
@@ -48,6 +49,15 @@
   h3,
   h4 {
     @apply font-display text-ink;
+    font-variation-settings:
+      "SOFT" 40,
+      "WONK" 1;
+  }
+
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.015em;
   }
 
   /* Visible keyboard focus everywhere — never suppressed. */
