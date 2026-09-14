@@ -1,19 +1,26 @@
+"""
+Application factory for Comrade Plug.
+
+Blueprints are registered here; each domain module (auth, gigs,
+applications, payments, reviews, admin) owns its own routes and
+request-validation schemas, and is wired in one place so a new
+feature costs one import + one registration line, not an edit to
+every file in the project.
+"""
 
 import os
 
 from flask import Flask, jsonify, request
+from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
 
-from app.config import get_config, validate_production_config
+from app.config import get_config
 from app.extensions import cors, db, jwt, limiter, migrate
 
 
 def create_app(env_name: str | None = None) -> Flask:
     app = Flask(__name__)
-    selected_env = env_name or os.environ.get("FLASK_ENV", "development")
-    app.config.from_object(get_config(selected_env))
-
-    if selected_env == "production":
-        validate_production_config(app.config)
+    app.config.from_object(get_config(env_name))
 
     os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
@@ -24,22 +31,24 @@ def create_app(env_name: str | None = None) -> Flask:
     cors.init_app(
         app,
         resources={r"/api/*": {"origins": app.config["CORS_ORIGINS"]}},
-        # JWTs are accepted only in Authorization headers, never cookies.
+        # Authentication is sent explicitly in the Authorization header.
         supports_credentials=False,
     )
     limiter.init_app(app)
 
     # Import models so they're registered on the SQLAlchemy metadata
     # before migrations or `db.create_all()` run.
-    from app import models
+    from app import models  # noqa: F401
 
     # --- Blueprints ---
-    from app.blueprints.admin.routes import admin_bp
-    from app.blueprints.applications.routes import applications_bp
     from app.blueprints.auth.routes import auth_bp
     from app.blueprints.gigs.routes import gigs_bp
+    from app.blueprints.applications.routes import applications_bp
     from app.blueprints.payments.routes import payments_bp
     from app.blueprints.reviews.routes import reviews_bp
+    from app.blueprints.admin.routes import admin_bp
+    from app.blueprints.saved_listings.routes import saved_listings_bp
+    from app.blueprints.portfolio.routes import portfolio_bp
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(gigs_bp, url_prefix="/api/gigs")
@@ -47,21 +56,31 @@ def create_app(env_name: str | None = None) -> Flask:
     app.register_blueprint(payments_bp, url_prefix="/api/payments")
     app.register_blueprint(reviews_bp, url_prefix="/api/reviews")
     app.register_blueprint(admin_bp, url_prefix="/api")
+    app.register_blueprint(saved_listings_bp, url_prefix="/api/saved")
+    app.register_blueprint(portfolio_bp, url_prefix="/api/portfolio")
 
     register_error_handlers(app)
 
     @app.after_request
     def add_security_headers(response):
         response.headers.setdefault("X-Content-Type-Options", "nosniff")
-        response.headers.setdefault("Referrer-Policy", "no-referrer")
         response.headers.setdefault("X-Frame-Options", "DENY")
-        response.headers.setdefault("Cache-Control", "no-store" if request.path.startswith("/api/auth") else "no-cache")
-        if selected_env == "production":
-            response.headers.setdefault("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+        response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+        response.headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+        if request.path.startswith("/api/"):
+            response.headers.setdefault("Cache-Control", "no-store")
         return response
 
     @app.get("/api/health")
     def health_check():
+        # A successful process is not useful if it has lost its database.
+        # Load balancers use this endpoint to avoid sending traffic to an
+        # unhealthy worker.
+        try:
+            db.session.execute(text("SELECT 1"))
+        except SQLAlchemyError:
+            app.logger.exception("Health check database connection failed")
+            return jsonify({"status": "unavailable", "service": "soko-comrada-api"}), 503
         return jsonify({"status": "ok", "service": "soko-comrada-api"}), 200
 
     return app
@@ -115,15 +134,3 @@ def register_error_handlers(app: Flask) -> None:
             jsonify({"error": "server_error", "message": "Something went wrong."}),
             500,
         )
-
-    @jwt.unauthorized_loader
-    def missing_jwt(reason):
-        return jsonify({"error": "unauthorized", "message": "Authentication is required."}), 401
-
-    @jwt.invalid_token_loader
-    def invalid_jwt(reason):
-        return jsonify({"error": "unauthorized", "message": "Invalid authentication token."}), 401
-
-    @jwt.expired_token_loader
-    def expired_jwt(jwt_header, jwt_payload):
-        return jsonify({"error": "unauthorized", "message": "Authentication token has expired."}), 401

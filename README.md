@@ -76,6 +76,29 @@ This scaffold is being built in phases against `Soko_Comrada_PRD.pdf`:
 - [x] Phase 3 — Frontend foundations & state (Tailwind theme, API client, auth/theme/toast context, layout chrome)
 - [x] Phase 4 — Feature components & page views (all 15 pages, gig/payment components)
 
+## Production deployment
+
+The included Docker Compose deployment serves the React app and API from one
+origin: the frontend proxies `/api/*` to Flask. This avoids browser CORS
+failures and keeps `VITE_API_BASE_URL=/api` valid in both environments.
+
+1. Create `server/.env` from `server/.env.example`. Set `FLASK_ENV=production`,
+   strong random `SECRET_KEY` and `JWT_SECRET_KEY`, and production database
+   settings. Do not use `localhost` for `DB_HOST` when the database is remote.
+2. Set `CORS_ORIGINS` to the public HTTPS site URL. The reverse proxy is
+   same-origin, but this keeps direct API access constrained.
+3. From the repository root, run `docker compose up --build -d`.
+   The backend applies Alembic migrations before Gunicorn starts; the frontend
+   is available at `http://<host>:8080` until a TLS proxy/load balancer is put
+   in front of it.
+4. Confirm `GET /api/health` returns `{"status":"ok",...}`. It checks the
+   database as well as the Flask process, and Docker will avoid starting the
+   frontend until the API is healthy.
+
+For public traffic, terminate TLS at your host/load balancer and forward to
+port 8080. Keep port 5000 private; only Nginx inside the deployment should
+reach it. Redis is included exclusively for shared rate limiting.
+
 Frontend build verified: `npm run build` and `npm run lint` both pass clean
 against the actual dependency tree (not just reviewed by eye). Backend:
 17/17 pytest passing.

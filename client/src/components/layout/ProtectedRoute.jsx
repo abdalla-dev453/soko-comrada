@@ -46,3 +46,26 @@ export function GuestOnlyRoute() {
 
   return <Outlet />;
 }
+
+/** Gate for admin-only routes — requires both an authenticated session
+ * and the is_admin flag from the JWT-backed profile. Non-admins are
+ * bounced to /dashboard rather than /login since they ARE logged in,
+ * just not authorized for this section. */
+export function AdminRoute() {
+  const { isAuthenticated, isLoading, user } = useAuth();
+  const location = useLocation();
+
+  if (isLoading) {
+    return <SectionLoader label="Checking your session…" />;
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
+
+  if (!user?.is_admin) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <Outlet />;
+}

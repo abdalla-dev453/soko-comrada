@@ -10,6 +10,7 @@
  */
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
+const API_REQUEST_TIMEOUT_MS = 15_000;
 
 const TOKEN_STORAGE_KEY = "soko_comrada_tokens";
 
@@ -79,7 +80,7 @@ async function parseErrorBody(res) {
  * @param {RequestInit & { skipAuth?: boolean }} [options]
  */
 export async function apiRequest(path, options = {}) {
-  const { skipAuth = false, headers, body, ...rest } = options;
+  const { skipAuth = false, headers, body, signal, ...rest } = options;
 
   const doFetch = async () => {
     const tokens = getStoredTokens();
@@ -91,11 +92,27 @@ export async function apiRequest(path, options = {}) {
       finalHeaders["Authorization"] = `Bearer ${tokens.access_token}`;
     }
 
-    return fetch(`${API_BASE_URL}${path}`, {
-      ...rest,
-      headers: finalHeaders,
-      body: isJsonBody ? JSON.stringify(body) : body,
-    });
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), API_REQUEST_TIMEOUT_MS);
+    const cancelRequest = () => controller.abort();
+    signal?.addEventListener("abort", cancelRequest, { once: true });
+
+    try {
+      return await fetch(`${API_BASE_URL}${path}`, {
+        ...rest,
+        headers: finalHeaders,
+        body: isJsonBody ? JSON.stringify(body) : body,
+        signal: controller.signal,
+      });
+    } catch (error) {
+      if (error.name === "AbortError") {
+        throw new ApiError("The server took too long to respond. Please try again.");
+      }
+      throw new ApiError("Couldn't reach the server. Check your connection and try again.");
+    } finally {
+      window.clearTimeout(timeoutId);
+      signal?.removeEventListener("abort", cancelRequest);
+    }
   };
 
   let res = await doFetch();

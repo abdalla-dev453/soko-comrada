@@ -1,3 +1,19 @@
+"""Notification domain logic.
+
+PRD §5.5 asks for an "in-app notification center" but the refined
+schema in PRD §8 deliberately has no notifications table (SMS/push
+and its persistence layer are called out as Phase 2 roadmap items,
+not MVP). Rather than adding a table the PRD didn't scope, the MVP
+notification feed is computed on read from state that already
+exists — recent application/review activity touching the current
+user — which is enough for the "new application / accepted /
+rejected / completed / review received" events §5.5 lists, with zero
+extra write paths to keep consistent.
+
+Email is the one channel PRD §5.5 says must be persisted/delivered
+for a *critical* action (an accepted application) rather than merely
+computed — that's handled by send_critical_email below.
+"""
 
 import smtplib
 from dataclasses import dataclass

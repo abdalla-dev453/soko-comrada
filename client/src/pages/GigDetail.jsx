@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { MapPin, Zap, TrendingUp, Star, Flag, ShieldAlert } from "lucide-react";
+import { MapPin, MapPinned, Zap, TrendingUp, Star, Flag, ShieldAlert, Clock, AlertOctagon } from "lucide-react";
 
 import { SEO } from "../components/common/SEO";
 import { Button } from "../components/common/Button";
@@ -10,6 +10,8 @@ import { SectionLoader } from "../components/common/Loader";
 import { ErrorBanner, fieldClasses } from "../components/common/ErrorBanner";
 import { StickyMobileCTA } from "../components/layout/StickyMobileCTA";
 import { BoostModal } from "../components/payments/BoostModal";
+import { PaymentModal } from "../components/payments/PaymentModal";
+import { DisputeModal } from "../components/gigs/DisputeModal";
 import {
   applyToGig,
   completeGig,
@@ -39,9 +41,10 @@ export default function GigDetail() {
   const [applied, setApplied] = useState(false);
 
   const [completing, setCompleting] = useState(false);
-  const [boostOpen, setBoostOpen] = useState(false);
+  const [paymentOpen, setPaymentOpen] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
+  const [disputeOpen, setDisputeOpen] = useState(false);
 
   const isPoster = gig && user && gig.poster_id === user.id;
 
@@ -101,16 +104,21 @@ export default function GigDetail() {
   const handleComplete = async () => {
     setCompleting(true);
     try {
-      await completeGig(gigId);
-      toast({
-        variant: "success",
-        title: "Gig marked complete",
-        description: "Leave a review when you're ready.",
-      });
+      const result = await completeGig(gigId);
       await load();
-      setReviewOpen(true);
+      if (result.needs_review) {
+        // Both parties confirmed — gig is done, prompt for a review.
+        toast({ variant: "success", title: "Gig completed", description: "Leave a review when you're ready." });
+        setReviewOpen(true);
+      } else {
+        // First confirmation — waiting on the other party.
+        toast({
+          title: "Completion requested",
+          description: `Waiting on the ${result.awaiting_confirmation_from} to confirm. They have 48 hours.`,
+        });
+      }
     } catch (err) {
-      toast({ variant: "error", title: "Couldn't complete this gig", description: err.message });
+      toast({ variant: "error", title: "Couldn't mark this gig", description: err.message });
     } finally {
       setCompleting(false);
     }
@@ -132,10 +140,15 @@ export default function GigDetail() {
   const acceptedApplication = applications?.find((a) => a.status === "ACCEPTED");
   const counterpartyId = isPoster ? acceptedApplication?.applicant.id : gig.poster_id;
   const canComplete =
-    (gig.status === "IN_PROGRESS" || gig.status === "OPEN") &&
+    ["IN_PROGRESS", "OPEN"].includes(gig.status) &&
     isAuthenticated &&
     (isPoster || acceptedApplication?.applicant.id === user?.id);
-  const canApply = gig.status === "OPEN" && isAuthenticated && !isPoster;
+  const canDispute =
+    gig.status === "PENDING_CONFIRMATION" &&
+    isAuthenticated &&
+    (isPoster || acceptedApplication?.applicant.id === user?.id) &&
+    !(isPoster ? gig.completed_by_poster : gig.completed_by_counterparty);
+  const canApply = gig.status === "OPEN" && !gig.is_full && isAuthenticated && !isPoster;
 
   return (
     <>
@@ -157,6 +170,16 @@ export default function GigDetail() {
             {gig.is_boosted && (
               <span className="inline-flex items-center gap-1 rounded-full bg-marigold-soft px-2 py-0.5 text-marigold-strong font-medium">
                 <TrendingUp className="h-3 w-3" aria-hidden="true" /> Boosted
+              </span>
+            )}
+            {gig.status === "PENDING_CONFIRMATION" && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-ink/5 px-2 py-0.5 text-ink-muted font-medium">
+                <Clock className="h-3 w-3" aria-hidden="true" /> Awaiting confirmation
+              </span>
+            )}
+            {gig.status === "DISPUTED" && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-coral-soft px-2 py-0.5 text-coral-strong font-medium">
+                <AlertOctagon className="h-3 w-3" aria-hidden="true" /> Disputed
               </span>
             )}
           </div>
@@ -183,19 +206,45 @@ export default function GigDetail() {
             </Link>
           )}
 
+          {gig.landmark && (
+            <p className="mt-2 inline-flex items-center gap-1 text-fluid-sm text-ink-muted">
+              <MapPinned className="h-3.5 w-3.5" aria-hidden="true" />
+              Near {gig.landmark}
+            </p>
+          )}
+
+          {gig.slots_needed > 1 && (
+            <p className="mt-2 text-fluid-sm text-ink-muted">
+              {gig.slots_filled} of {gig.slots_needed} spots filled
+            </p>
+          )}
+
+          {gig.status === "PENDING_CONFIRMATION" && gig.confirmation_deadline && (
+            <div className="mt-4 rounded-lg border border-border bg-surface px-4 py-3 text-fluid-sm text-ink-muted">
+              <span className="font-medium text-ink">Awaiting confirmation</span> — the other party has until{" "}
+              {new Date(gig.confirmation_deadline).toLocaleString("en-KE", { dateStyle: "medium", timeStyle: "short" })} to
+              confirm or dispute. If they don't act, the gig auto-completes.
+            </div>
+          )}
+
           <p className="mt-6 text-fluid-base text-ink whitespace-pre-line leading-relaxed">
             {gig.description}
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
             {isPoster && gig.status === "OPEN" && (
-              <Button variant="secondary" onClick={() => setBoostOpen(true)}>
+              <Button variant="secondary" onClick={() => setPaymentOpen(true)}>
                 Boost this gig
               </Button>
             )}
             {canComplete && (
               <Button loading={completing} onClick={handleComplete} className="hidden md:inline-flex">
                 Mark as completed
+              </Button>
+            )}
+            {canDispute && (
+              <Button variant="secondary" icon={AlertOctagon} onClick={() => setDisputeOpen(true)} className="hidden md:inline-flex">
+                Dispute completion
               </Button>
             )}
             {gig.status === "COMPLETED" && isAuthenticated && (
@@ -303,14 +352,14 @@ export default function GigDetail() {
               <p className="text-fluid-sm text-ink-muted">
                 <Link
                   to="/login"
-                  state={{ from: `/gigs/${gig.id}` }}   
+                  state={{ from: `/gigs/${gig.id}` }}
                   className="text-ink underline decoration-dotted"
                 >
                   Log in
                 </Link>{" "}
                 to apply for this gig.
               </p>
-            </div>  
+            </div>
           )}
         </motion.div>
       </div>
@@ -326,7 +375,14 @@ export default function GigDetail() {
         </Button>
       </StickyMobileCTA>
 
-      <BoostModal open={boostOpen} onClose={() => setBoostOpen(false)} gigId={gig.id} onSubmitted={load} />
+      <BoostModal open={false} onClose={() => {}} gigId={gig?.id} onSubmitted={load} />
+      <PaymentModal
+        open={paymentOpen}
+        onClose={() => setPaymentOpen(false)}
+        purpose="BOOST"
+        gigId={gig.id}
+        onSuccess={load}
+      />
 
       <ReviewModal
         open={reviewOpen}
@@ -336,6 +392,13 @@ export default function GigDetail() {
       />
 
       <ReportModal open={reportOpen} onClose={() => setReportOpen(false)} gigId={gig.id} />
+
+      <DisputeModal
+        open={disputeOpen}
+        onClose={() => setDisputeOpen(false)}
+        gigId={gig.id}
+        onDisputed={load}
+      />
     </>
   );
 }

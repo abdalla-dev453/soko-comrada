@@ -7,7 +7,7 @@ from flask import Blueprint, jsonify, request
 from marshmallow import Schema, ValidationError, fields, validate
 from sqlalchemy import func
 
-from app.extensions import db
+from app.extensions import db, limiter
 from app.models.application import Application, ApplicationStatus
 from app.models.gig import Gig, GigStatus
 from app.models.review import Review
@@ -38,6 +38,7 @@ def _recompute_avg_rating(user: User) -> None:
 
 
 @reviews_bp.post("")
+@limiter.limit("10 per hour")
 @load_current_user
 def create_review(current_user):
     try:
@@ -92,10 +93,10 @@ def create_review(current_user):
 
 @reviews_bp.get("/user/<int:user_id>")
 def list_reviews_for_user(user_id: int):
-    User.query.get_or_404(user_id)
+    user = User.query.get_or_404(user_id)
     reviews = (
         Review.query.filter_by(reviewee_id=user_id)
         .order_by(Review.created_at.desc())
         .all()
     )
-    return jsonify({"reviews": [r.to_dict() for r in reviews]}), 200
+    return jsonify({"user": user.to_public_dict(), "reviews": [r.to_dict() for r in reviews]}), 200

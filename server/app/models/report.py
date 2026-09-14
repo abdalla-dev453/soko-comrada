@@ -29,6 +29,9 @@ class Report(db.Model):
     status = db.Column(
         db.Enum(ReportStatus), default=ReportStatus.OPEN, nullable=False, index=True
     )
+    # Distinguishes a rules-engine moderation item from a report filed by a
+    # user; only the former may automatically alter a gig on resolution.
+    auto_generated = db.Column(db.Boolean, default=False, nullable=False)
     created_at = db.Column(
         db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
     )
@@ -49,6 +52,7 @@ class Report(db.Model):
             "reported_user_id": self.reported_user_id,
             "reason": self.reason,
             "status": self.status.value,
+            "auto_generated": self.auto_generated,
             "created_at": self.created_at.isoformat(),
         }
 

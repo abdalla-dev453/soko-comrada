@@ -14,6 +14,8 @@
   --color-ink: 28 32 30;
   --color-ink-muted: 76 84 79;
   --color-border: 207 211 205;
+  --color-coral: 232 87 47;
+  --color-lilac: 119 93 196;
 }
 
 .dark {
@@ -23,6 +25,8 @@
   --color-ink: 244 242 237;
   --color-ink-muted: 163 163 156;
   --color-border: 55 59 68;
+  --color-coral: 255 117 80;
+  --color-lilac: 167 139 250;
 }
 
 @layer base {
@@ -41,7 +45,9 @@
     @apply bg-bg text-ink font-body antialiased;
     font-feature-settings: "ss01" 1;
     text-rendering: optimizeLegibility;
-    font-size: 0.98rem;
+    font-size: 1rem;
+    font-weight: 500;
+    background-image: radial-gradient(circle at 10% 10%, rgb(var(--color-coral) / 0.08), transparent 25%), radial-gradient(circle at 90% 20%, rgb(var(--color-lilac) / 0.08), transparent 25%);
   }
 
   h1,
@@ -57,7 +63,15 @@
   h1,
   h2,
   h3 {
-    letter-spacing: -0.015em;
+    letter-spacing: -0.02em;
+    font-weight: 750;
+  }
+
+  h4,
+  button,
+  label,
+  a {
+    font-weight: 650;
   }
 
   /* Visible keyboard focus everywhere — never suppressed. */
@@ -93,13 +107,56 @@
      structural motif in the whole UI — everything else stays quiet. */
   .ticket {
     position: relative;
+    overflow: hidden;
     border-radius: theme("borderRadius.ticket");
+    transition: transform 220ms ease, box-shadow 220ms ease;
     background-image: radial-gradient(
       circle at 0 50%,
       transparent 0,
       transparent 6px,
       transparent 6px
     );
+  }
+
+  .ticket:hover {
+    transform: translateY(-4px);
+  }
+
+  .ticket:hover::before {
+    filter: brightness(1.2);
+  }
+
+  .vibrant-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgb(var(--color-surface) / 0.9), rgb(var(--color-moss, 76 122 93) / 0.1));
+  }
+
+  .vibrant-hero::before,
+  .vibrant-hero::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    width: 18rem;
+    height: 18rem;
+    border-radius: 999px;
+    filter: blur(12px);
+    pointer-events: none;
+    animation: soft-pulse 5s ease-in-out infinite;
+  }
+
+  .vibrant-hero::before {
+    top: -8rem;
+    right: -5rem;
+    background: rgb(var(--color-coral) / 0.2);
+  }
+
+  .vibrant-hero::after {
+    bottom: -10rem;
+    left: -7rem;
+    background: rgb(var(--color-lilac) / 0.14);
+    animation-delay: -2s;
   }
 
   .ticket::before {
@@ -128,6 +185,31 @@
 @layer utilities {
   .scrollbar-none {
     scrollbar-width: none;
+  }
+
+  .text-gradient {
+    background: linear-gradient(110deg, theme("colors.marigold.DEFAULT"), rgb(var(--color-coral)), rgb(var(--color-lilac)));
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shimmer 5s linear infinite;
+  }
+
+  .live-dot {
+    position: relative;
+  }
+
+  .live-dot::before {
+    content: "";
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-right: 0.45rem;
+    border-radius: 999px;
+    background: rgb(var(--color-coral));
+    box-shadow: 0 0 0 0 rgb(var(--color-coral) / 0.45);
+    animation: soft-pulse 2s ease-in-out infinite;
   }
   .scrollbar-none::-webkit-scrollbar {
     display: none;

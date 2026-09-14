@@ -14,10 +14,11 @@ const NAV_LINKS = [
   { to: "/about", label: "About" },
   { to: "/contact", label: "Contact" },
   { to: "/dashboard", label: "Dashboard", authOnly: true },
+  { to: "/admin", label: "Admin", adminOnly: true },
 ];
 
 export function MobileDrawer({ open, onClose }) {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
@@ -61,7 +62,10 @@ export function MobileDrawer({ open, onClose }) {
             </div>
 
             <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Mobile">
-              {NAV_LINKS.filter((link) => !link.authOnly || isAuthenticated).map((link) => (
+              {NAV_LINKS.filter(
+                (link) =>
+                  (!link.authOnly || isAuthenticated) && (!link.adminOnly || user?.is_admin)
+              ).map((link) => (
                 <NavLink
                   key={link.to}
                   to={link.to}

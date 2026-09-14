@@ -9,6 +9,25 @@ export async function submitPayment({ mpesaCode, purpose, gigId }) {
   return data.payment;
 }
 
+export async function initiateSTKPush({ purpose, gigId, phoneNumber }) {
+  const data = await apiClient.post("/payments/stk-push", {
+    purpose,
+    gig_id: gigId,
+    phone_number: phoneNumber,
+  });
+  return data.payment;
+}
+
+export async function redeemBoostCredit(gigId) {
+  const data = await apiClient.post("/payments/redeem-credit", { gig_id: gigId });
+  return data;
+}
+
+export async function pollPayment(paymentId) {
+  const data = await apiClient.get(`/payments/${paymentId}`);
+  return data.payment;
+}
+
 export async function fetchMyPayments() {
   const data = await apiClient.get("/payments/mine");
   return data.payments;
@@ -35,4 +54,14 @@ export async function fetchReports(status) {
 export async function resolveReport(reportId, status) {
   const data = await apiClient.patch(`/admin/reports/${reportId}`, { status });
   return data.report;
+}
+
+export async function fetchDisputes() {
+  const data = await apiClient.get("/admin/disputes");
+  return data.gigs;
+}
+
+export async function resolveDispute(gigId, resolution) {
+  const data = await apiClient.post(`/admin/disputes/${gigId}/resolve`, { resolution });
+  return data.gig;
 }

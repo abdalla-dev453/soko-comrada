@@ -10,9 +10,10 @@ per the API surface table) and a "my applications" listing.
 from flask import Blueprint, current_app, jsonify, request
 from marshmallow import Schema, ValidationError, fields, validate
 
-from app.extensions import db
+from app.extensions import db, limiter
 from app.models.application import Application, ApplicationStatus
 from app.models.gig import Gig, GigStatus
+from app.services import whatsapp_service
 from app.services.notification_service import send_critical_email
 from app.utils.decorators import load_current_user
 
@@ -41,12 +42,18 @@ def list_my_applications(current_user):
 
 
 @applications_bp.patch("/<int:application_id>")
+@limiter.limit("30 per hour")
 @load_current_user
 def update_application_status(current_user, application_id: int):
-    """Poster accepts or rejects an applicant. Accepting one applicant
-    moves the gig to IN_PROGRESS (PRD §5.2); accepting also auto-
-    rejects the other pending applicants so only one accepted
-    application ever exists per gig."""
+    """Poster accepts or rejects an applicant.
+
+    Phase 8 (multi-person gigs): a gig now needs `slots_needed`
+    accepted applicants, not just one. Accepting increments
+    `slots_filled`; the gig only moves to IN_PROGRESS — and only then
+    are the remaining pending applications auto-rejected — once every
+    slot is filled. Before that, the gig stays OPEN and other pending
+    applications are left alone so the poster can keep filling slots.
+    """
     application = Application.query.get_or_404(application_id)
     gig = application.gig
 
@@ -62,20 +69,28 @@ def update_application_status(current_user, application_id: int):
         return jsonify({"error": "validation_error", "message": err.messages}), 422
 
     new_status = ApplicationStatus(data["status"])
+
+    if new_status == ApplicationStatus.ACCEPTED and gig.is_full():
+        return jsonify({"error": "conflict", "message": "All the slots on this gig are already filled."}), 409
+
     application.status = new_status
 
     if new_status == ApplicationStatus.ACCEPTED:
-        gig.status = GigStatus.IN_PROGRESS
+        gig.slots_filled += 1
         db.session.add(gig)
 
-        other_pending = Application.query.filter(
-            Application.gig_id == gig.id,
-            Application.id != application.id,
-            Application.status == ApplicationStatus.PENDING,
-        ).all()
-        for other in other_pending:
-            other.status = ApplicationStatus.REJECTED
-            db.session.add(other)
+        if gig.is_full():
+            gig.status = GigStatus.IN_PROGRESS
+            db.session.add(gig)
+
+            other_pending = Application.query.filter(
+                Application.gig_id == gig.id,
+                Application.id != application.id,
+                Application.status == ApplicationStatus.PENDING,
+            ).all()
+            for other in other_pending:
+                other.status = ApplicationStatus.REJECTED
+                db.session.add(other)
 
     db.session.commit()
 
@@ -89,6 +104,13 @@ def update_application_status(current_user, application_id: int):
                 f'Good news — {gig.poster.name} accepted your application for "{gig.title}".\n'
                 "Open Soko Comrada to coordinate next steps."
             ),
+            logger=current_app.logger,
+        )
+        whatsapp_service.notify_application_accepted(
+            current_app.config,
+            applicant_phone=application.applicant.phone_number,
+            poster_name=gig.poster.name,
+            gig_title=gig.title,
             logger=current_app.logger,
         )
 

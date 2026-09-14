@@ -2,7 +2,7 @@ import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 
 import { RootLayout } from "./components/layout/RootLayout";
-import { ProtectedRoute } from "./components/layout/ProtectedRoute";
+import { ProtectedRoute, GuestOnlyRoute, AdminRoute } from "./components/layout/ProtectedRoute";
 import { SectionLoader } from "./components/common/Loader";
 
 const Home = lazy(() => import("./pages/Home"));
@@ -19,6 +19,7 @@ const Contact = lazy(() => import("./pages/Contact"));
 const ThankYou = lazy(() => import("./pages/ThankYou"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
+const Admin = lazy(() => import("./pages/Admin"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 export default function App() {
@@ -30,18 +31,25 @@ export default function App() {
           <Route path="gigs" element={<GigsBrowse />} />
           <Route path="gigs/:gigId" element={<GigDetail />} />
           <Route path="users/:userId" element={<Profile />} />
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<Register />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
           <Route path="thank-you" element={<ThankYou />} />
           <Route path="privacy" element={<Privacy />} />
           <Route path="terms" element={<Terms />} />
 
+          <Route element={<GuestOnlyRoute />}>
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register />} />
+          </Route>
+
           <Route element={<ProtectedRoute />}>
             <Route path="gigs/new" element={<PostGig />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="notifications" element={<Notifications />} />
+          </Route>
+
+          <Route element={<AdminRoute />}>
+            <Route path="admin" element={<Admin />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />

@@ -10,7 +10,7 @@ import { GigFeedSkeleton } from "../components/common/Skeleton";
 import { fetchGigs } from "../api/gigs";
 import { useAuth } from "../hooks/useAuth";
 import { trackCtaClick } from "../utils/analytics";
-import { heroContainer, heroItem } from "../utils/motion";
+import { cardContainer, cardReveal, heroContainer, heroItem, sectionReveal } from "../utils/motion";
 
 const STEPS = [
   {
@@ -54,19 +54,19 @@ export default function Home() {
   return (
     <>
       <SEO
-        title="Soko Comrada — Campus gigs & hustles, sorted"
+        title="Comrade Plug — Campus gigs & hustles, sorted"
         description="Post a task or offer a skill on your campus. Fast, local, and verified by .ac.ke email — no more scrolling five WhatsApp groups."
         path="/"
       />
 
-      <section className="mx-auto max-w-6xl px-4 pt-14 pb-16 sm:px-6 sm:pt-20 sm:pb-24">
+      <section className="vibrant-hero mx-auto max-w-6xl rounded-[2rem] px-4 pt-14 pb-16 sm:px-8 sm:pt-20 sm:pb-24">
         <motion.div variants={heroContainer} initial="hidden" animate="show" className="max-w-3xl">
-          <motion.p variants={heroItem} className="mb-4 text-fluid-sm font-medium text-marigold-strong dark:text-marigold">
+          <motion.p variants={heroItem} className="live-dot mb-4 text-fluid-sm font-bold uppercase tracking-[0.12em] text-marigold-strong dark:text-marigold">
             Built for one campus at a time — starting with MUT- MURANG'A
           </motion.p>
           <motion.h1
             variants={heroItem}
-            className="font-display font-semibold text-fluid-hero tracking-tight text-ink"
+            className="font-display font-bold text-fluid-hero tracking-tight text-gradient"
           >
             The hustle economy your campus already runs, minus the scams.
           </motion.h1>
@@ -101,26 +101,38 @@ export default function Home() {
 
       <section className="border-y border-border bg-surface">
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
-          <h2 className="font-display font-semibold text-fluid-2xl mb-10 max-w-xl">
+          <motion.h2
+            variants={sectionReveal}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.35 }}
+            className="font-display font-bold text-fluid-2xl mb-10 max-w-xl"
+          >
             Three steps, no group chat required
-          </h2>
-          <div className="grid gap-8 sm:grid-cols-3">
+          </motion.h2>
+          <motion.div
+            variants={cardContainer}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+            className="grid gap-8 sm:grid-cols-3"
+          >
             {STEPS.map((step) => (
-              <div key={step.number}>
-                <span className="font-display text-fluid-2xl text-marigold-strong">
+              <motion.div key={step.number} variants={cardReveal} className="group rounded-2xl border-border bg-bg/40 p-5 shadow-card transition-colors hover:border-marigold/60">
+                <span className="inline-flex animate-float font-display font-bold text-fluid-2xl text-marigold-strong">
                   {step.number}
                 </span>
-                <h3 className="mt-2 font-display font-semibold text-fluid-lg">{step.title}</h3>
+                <h3 className="mt-4 font-display font-bold text-fluid-lg">{step.title}</h3>
                 <p className="mt-2 text-fluid-sm text-ink-muted">{step.description}</p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
         <div className="flex items-end justify-between gap-4 mb-8">
-          <h2 className="font-display font-semibold text-fluid-2xl">Open on campus right now</h2>
+          <h2 className="font-display font-bold text-fluid-2xl">Open on campus right now</h2>
           <Link
             to="/gigs"
             className="hidden sm:inline-flex items-center gap-1 text-fluid-sm font-medium text-ink-muted hover:text-ink transition-colors"
@@ -140,11 +152,19 @@ export default function Home() {
           </p>
         )}
         {gigs && gigs.length > 0 && (
-          <div className="grid gap-4 sm:grid-cols-3">
+          <motion.div
+            variants={cardContainer}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+            className="grid gap-4 sm:grid-cols-3"
+          >
             {gigs.map((gig) => (
-              <GigCard key={gig.id} gig={gig} />
+              <motion.div key={gig.id} variants={cardReveal}>
+                <GigCard gig={gig} />
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         )}
       </section>
 

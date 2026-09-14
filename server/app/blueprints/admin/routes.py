@@ -1,21 +1,33 @@
+"""Admin blueprint — the manual verification queue at the heart of
+the MVP trust model (PRD §5.3/§9), plus the reports (flagging)
+domain.
+
+Registered at url_prefix="/api" (not "/api/admin") in the app
+factory, because the Core API Surface table (PRD §11) puts report
+creation at the top-level POST /api/reports — not under /api/admin —
+even though Report review/resolution is an admin-only action that
+belongs in this module alongside payment verification. Routes below
+are explicit about which half of that they're in.
+"""
 
 from flask import Blueprint, jsonify, request
 from marshmallow import Schema, ValidationError, fields, validate
 
-from app.extensions import db
-from app.models.gig import Gig
+from app.extensions import db, limiter
+from app.models.gig import Gig, GigStatus
 from app.models.payment import Payment, PaymentStatus
 from app.models.report import Report, ReportStatus
 from app.models.user import User
+from app.services.dispute_service import DisputeError, resolve_dispute
 from app.services.payment_service import verify_payment
 from app.utils.decorators import admin_required, load_current_user
 
 admin_bp = Blueprint("admin", __name__)
 
 
-# --------------------------------------------------------
+# ---------------------------------------------------------------------------
 # Public: flagging a gig or user (POST /api/reports)
-# -------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 class ReportCreateSchema(Schema):
@@ -28,6 +40,7 @@ report_create_schema = ReportCreateSchema()
 
 
 @admin_bp.post("/reports")
+@limiter.limit("10 per hour")
 @load_current_user
 def create_report(current_user):
     try:
@@ -63,9 +76,9 @@ def create_report(current_user):
     return jsonify({"report": report.to_dict()}), 201
 
 
-# --------------------------------------------------
+# ---------------------------------------------------------------------------
 # Admin-only: payment verification queue
-# --------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 @admin_bp.get("/admin/payments/pending")
@@ -76,7 +89,7 @@ def list_pending_payments():
         .order_by(Payment.created_at.asc())
         .all()
     )
-    return jsonify({"payments": [p.to_dict(include_mpesa_code=True) for p in payments]}), 200
+    return jsonify({"payments": [p.to_admin_dict() for p in payments]}), 200
 
 
 class PaymentDecisionSchema(Schema):
@@ -87,6 +100,7 @@ payment_decision_schema = PaymentDecisionSchema()
 
 
 @admin_bp.post("/admin/payments/<int:payment_id>/decision")
+@limiter.limit("60 per hour")
 @admin_required
 def decide_payment(payment_id: int):
     payment = Payment.query.get_or_404(payment_id)
@@ -102,9 +116,9 @@ def decide_payment(payment_id: int):
     return jsonify({"payment": payment.to_dict()}), 200
 
 
-# -----------------------------------------------
+# ---------------------------------------------------------------------------
 # Admin-only: reports queue
-# -----------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 @admin_bp.get("/admin/reports")
@@ -129,6 +143,7 @@ report_resolution_schema = ReportResolutionSchema()
 
 
 @admin_bp.patch("/admin/reports/<int:report_id>")
+@limiter.limit("60 per hour")
 @admin_required
 def resolve_report(report_id: int):
     report = Report.query.get_or_404(report_id)
@@ -139,6 +154,69 @@ def resolve_report(report_id: int):
         return jsonify({"error": "validation_error", "message": err.messages}), 422
 
     report.status = ReportStatus(data["status"])
+    db.session.add(report)
+
+    # Phase 9: an auto-generated moderation report carries a real
+    # consequence for the underlying gig, not just a status change on
+    # the report itself — DISMISSED means the flag was a false
+    # positive (publish it), REVIEWED means the flag was correct
+    # (kill it). Manually-filed reports never do this automatically;
+    # an admin resolving a user's abuse report doesn't imply any
+    # particular action on the gig.
+    if report.auto_generated and report.reported_gig_id:
+        gig = db.session.get(Gig, report.reported_gig_id)
+        if gig is not None:
+            if report.status == ReportStatus.DISMISSED:
+                gig.flagged_for_review = False
+            elif report.status == ReportStatus.REVIEWED:
+                gig.status = GigStatus.CANCELLED
+                gig.flagged_for_review = False
+            db.session.add(gig)
+
     db.session.commit()
 
     return jsonify({"report": report.to_dict()}), 200
+
+
+# ---------------------------------------------------------------------------
+# Admin-only: dispute resolution queue (Phase 6)
+# ---------------------------------------------------------------------------
+
+
+@admin_bp.get("/admin/disputes")
+@admin_required
+def list_disputes():
+    gigs = (
+        Gig.query.filter_by(status=GigStatus.DISPUTED)
+        .order_by(Gig.created_at.asc())
+        .all()
+    )
+    return jsonify({"gigs": [g.to_dict() for g in gigs]}), 200
+
+
+class DisputeResolutionSchema(Schema):
+    resolution = fields.Str(
+        required=True, validate=validate.OneOf(["COMPLETED", "CANCELLED"])
+    )
+
+
+dispute_resolution_schema = DisputeResolutionSchema()
+
+
+@admin_bp.post("/admin/disputes/<int:gig_id>/resolve")
+@limiter.limit("60 per hour")
+@admin_required
+def resolve_dispute_route(gig_id: int):
+    gig = Gig.query.get_or_404(gig_id)
+
+    try:
+        data = dispute_resolution_schema.load(request.get_json(silent=True) or {})
+    except ValidationError as err:
+        return jsonify({"error": "validation_error", "message": err.messages}), 422
+
+    try:
+        gig = resolve_dispute(gig, data["resolution"])
+    except DisputeError as err:
+        return jsonify({"error": "conflict", "message": err.message}), err.status_code
+
+    return jsonify({"gig": gig.to_dict()}), 200

@@ -37,6 +37,11 @@ export async function completeGig(gigId) {
   return apiClient.post(`/gigs/${gigId}/complete`);
 }
 
+export async function disputeGig(gigId, reason) {
+  const data = await apiClient.post(`/gigs/${gigId}/dispute`, { reason });
+  return data.gig;
+}
+
 export async function decideApplication(applicationId, status) {
   return apiClient.patch(`/applications/${applicationId}`, { status });
 }
@@ -72,4 +77,28 @@ export async function submitReport({ reason, reportedGigId, reportedUserId }) {
     reported_user_id: reportedUserId,
   });
   return data.report;
+}
+
+export async function fetchSavedListings() {
+  const data = await apiClient.get("/saved");
+  return data.gigs;
+}
+
+export async function saveListing(gigId) {
+  const data = await apiClient.post("/saved", { gig_id: gigId });
+  return data.saved;
+}
+
+export async function unsaveListing(gigId) {
+  await apiClient.delete(`/saved/${gigId}`);
+}
+
+export async function fetchPortfolioImages(userId) {
+  const data = await apiClient.get(`/portfolio/user/${userId}`, { skipAuth: true });
+  return data.portfolio_images;
+}
+
+export async function uploadPortfolioImage(payload) {
+  const data = await apiClient.post("/portfolio", payload);
+  return data.portfolio_image;
 }

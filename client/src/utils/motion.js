@@ -16,19 +16,44 @@ export const heroContainer = {
 };
 
 export const heroItem = {
-  hidden: { opacity: 0, y: 16 },
+  hidden: { opacity: 0, y: 22, filter: "blur(5px)" },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+    filter: "blur(0px)",
+    transition: { duration: 0.72, ease: [0.16, 1, 0.3, 1] },
+  },
+};
+
+export const sectionReveal = {
+  hidden: { opacity: 0, y: 28 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] },
+  },
+};
+
+export const cardContainer = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1 } },
+};
+
+export const cardReveal = {
+  hidden: { opacity: 0, y: 18, scale: 0.98 },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
   },
 };
 
 /** Tap/hover feedback for interactive controls — buttons, ticket cards. */
 export const pressable = {
-  rest: { scale: 1 },
-  hover: { scale: 1.015, transition: { duration: 0.18, ease: "easeOut" } },
-  tap: { scale: 0.985, transition: { duration: 0.1 } },
+  rest: { scale: 1, y: 0 },
+  hover: { scale: 1.02, y: -3, transition: { duration: 0.22, ease: "easeOut" } },
+  tap: { scale: 0.975, y: 0, transition: { duration: 0.1 } },
 };
 
 /** Drawer / sheet slide-in (mobile nav, filters). */

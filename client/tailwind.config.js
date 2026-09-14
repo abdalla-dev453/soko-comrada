@@ -37,6 +37,9 @@ export default {
         display: ["'Fraunces'", "Georgia", "serif"],
         body: ["'Source Sans 3'", "system-ui", "sans-serif"],
       },
+      fontWeight: {
+        strong: "750",
+      },
       fontSize: {
         // Fluid type scale — clamp(min, preferred-vw, max) so headings
         // scale smoothly between a 360px phone and a desktop viewport
@@ -100,11 +103,26 @@ export default {
           "0%": { opacity: "0", transform: "translateY(8px) scale(0.98)" },
           "100%": { opacity: "1", transform: "translateY(0) scale(1)" },
         },
+        float: {
+          "0%, 100%": { transform: "translate3d(0, 0, 0) rotate(0deg)" },
+          "50%": { transform: "translate3d(0, -12px, 0) rotate(2deg)" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "200% 0" },
+          "100%": { backgroundPosition: "-200% 0" },
+        },
+        "soft-pulse": {
+          "0%, 100%": { opacity: "0.55", transform: "scale(1)" },
+          "50%": { opacity: "0.9", transform: "scale(1.08)" },
+        },
       },
       animation: {
         "fade-in": "fade-in 0.4s ease-out both",
         "rise-in": "rise-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both",
         "toast-in": "toast-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) both",
+        float: "float 6s ease-in-out infinite",
+        shimmer: "shimmer 5s linear infinite",
+        "soft-pulse": "soft-pulse 4s ease-in-out infinite",
       },
       screens: {
         xs: "420px",
