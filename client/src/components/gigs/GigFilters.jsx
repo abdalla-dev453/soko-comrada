@@ -21,7 +21,7 @@ export function GigFilters({ filters, onChange, onReset }) {
   return (
     <div className="flex flex-wrap items-end gap-3">
       <div className="flex flex-col gap-1 min-w-[10rem]">
-        <label htmlFor="filter-campus" className="text-fluid-xs font-medium text-ink-muted">
+        <label htmlFor="filter-campus" className="text-xs font-medium text-ink-muted">
           Campus
         </label>
         <input
@@ -35,7 +35,7 @@ export function GigFilters({ filters, onChange, onReset }) {
       </div>
 
       <div className="flex flex-col gap-1 min-w-[9rem]">
-        <label htmlFor="filter-category" className="text-fluid-xs font-medium text-ink-muted">
+        <label htmlFor="filter-category" className="text-xs font-medium text-ink-muted">
           Category
         </label>
         <select
@@ -54,7 +54,7 @@ export function GigFilters({ filters, onChange, onReset }) {
       </div>
 
       <div className="flex flex-col gap-1 min-w-[8rem]">
-        <label htmlFor="filter-type" className="text-fluid-xs font-medium text-ink-muted">
+        <label htmlFor="filter-type" className="text-xs font-medium text-ink-muted">
           Type
         </label>
         <select
@@ -69,12 +69,12 @@ export function GigFilters({ filters, onChange, onReset }) {
         </select>
       </div>
 
-      <label className="flex items-center gap-2 pb-2.5 text-fluid-sm text-ink cursor-pointer select-none">
+      <label className="flex items-center gap-2 pb-2.5 text-sm text-ink cursor-pointer select-none">
         <input
           type="checkbox"
           checked={filters.urgent === "true"}
           onChange={(e) => onChange({ urgent: e.target.checked ? "true" : "" })}
-          className="h-4 w-4 rounded border-border text-coral focus:ring-coral/40"
+          className="h-4 w-4 rounded border-border text-accent focus:ring-accent/20"
         />
         Urgent only
       </label>
@@ -83,14 +83,14 @@ export function GigFilters({ filters, onChange, onReset }) {
         <button
           type="button"
           onClick={onReset}
-          className="flex items-center gap-1 pb-2.5 text-fluid-sm text-ink-muted hover:text-ink transition-colors"
+          className="flex items-center gap-1 pb-2.5 text-sm text-ink-muted hover:text-ink transition-colors"
         >
           <X className="h-4 w-4" aria-hidden="true" />
           Clear filters
         </button>
       )}
 
-      <span className="hidden lg:inline-flex items-center gap-1.5 pb-2.5 ml-auto text-fluid-xs text-ink-muted">
+      <span className="hidden lg:inline-flex items-center gap-1.5 pb-2.5 ml-auto text-xs text-ink-muted">
         <SlidersHorizontal className="h-3.5 w-3.5" aria-hidden="true" />
         Boosted gigs show first
       </span>

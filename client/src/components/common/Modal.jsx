@@ -58,11 +58,11 @@ export function Modal({ open, onClose, title, children, size = "md" }) {
             aria-modal="true"
             aria-labelledby={title ? "modal-title" : undefined}
             tabIndex={-1}
-            className={`relative w-full ${sizeClass} rounded-2xl bg-surface-raised shadow-popover p-6`}
+            className={`relative w-full ${sizeClass} rounded-card bg-surface-raised shadow-modal p-6`}
           >
             <div className="flex items-start justify-between gap-4 mb-4">
               {title && (
-                <h2 id="modal-title" className="text-fluid-lg font-display font-semibold">
+                <h2 id="modal-title" className="text-lg font-display font-semibold">
                   {title}
                 </h2>
               )}

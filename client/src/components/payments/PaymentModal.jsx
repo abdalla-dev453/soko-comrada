@@ -25,12 +25,11 @@ export function PaymentModal({ open, onClose, purpose, gigId, onSuccess }) {
   const { user, refreshProfile } = useAuth();
   const { toast } = useToast();
 
-  const [method, setMethod] = useState("stk"); // stk | manual | credit
+  const [method, setMethod] = useState("stk");
   const [mpesaCode, setMpesaCode] = useState("");
   const [codeError, setCodeError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  // STK Push polling state
   const [pendingPayment, setPendingPayment] = useState(null);
   const [polling, setPolling] = useState(false);
   const [pollCount, setPollCount] = useState(0);
@@ -39,7 +38,6 @@ export function PaymentModal({ open, onClose, purpose, gigId, onSuccess }) {
   const label = PURPOSE_LABELS[purpose] || purpose;
   const hasCredits = user?.free_boost_credits > 0 && purpose === "BOOST";
 
-  // Reset state when modal opens
   useEffect(() => {
     if (open) {
       setMethod(hasCredits ? "credit" : "stk");
@@ -51,7 +49,6 @@ export function PaymentModal({ open, onClose, purpose, gigId, onSuccess }) {
     }
   }, [open, hasCredits]);
 
-  // Poll for STK result
   useEffect(() => {
     if (!pendingPayment || !polling) return;
     if (pollCount >= 12) {
@@ -135,14 +132,13 @@ export function PaymentModal({ open, onClose, purpose, gigId, onSuccess }) {
     }
   };
 
-  // Polling UI
   if (polling) {
     return (
       <Modal open={open} onClose={undefined} title="Waiting for payment">
         <div className="flex flex-col items-center gap-4 py-4 text-center">
-          <Loader2 className="h-10 w-10 animate-spin text-moss-strong" aria-hidden="true" />
-          <p className="text-fluid-sm text-ink">Waiting for Safaricom to confirm…</p>
-          <p className="text-fluid-xs text-ink-muted">Enter your M-Pesa PIN on the prompt that appeared on your phone.</p>
+          <Loader2 className="h-10 w-10 animate-spin text-success" aria-hidden="true" />
+          <p className="text-sm text-ink">Waiting for Safaricom to confirm…</p>
+          <p className="text-xs text-ink-muted">Enter your M-Pesa PIN on the prompt that appeared on your phone.</p>
           <Button
             variant="ghost"
             size="sm"
@@ -157,12 +153,11 @@ export function PaymentModal({ open, onClose, purpose, gigId, onSuccess }) {
 
   return (
     <Modal open={open} onClose={onClose} title={`Pay for ${label}`}>
-      <p className="text-fluid-sm text-ink-muted mb-4">
+      <p className="text-sm text-ink-muted mb-4">
         <strong className="text-ink">KES {fee}</strong> · Till number{" "}
         <strong className="text-ink">{TILL}</strong>
       </p>
 
-      {/* Method tabs */}
       <div className="flex gap-1 border border-border rounded-lg p-0.5 mb-5">
         {hasCredits && (
           <MethodTab active={method === "credit"} onClick={() => setMethod("credit")} icon={Gift} label="Free credit" />
@@ -173,7 +168,7 @@ export function PaymentModal({ open, onClose, purpose, gigId, onSuccess }) {
 
       {method === "credit" && (
         <div className="flex flex-col gap-3">
-          <div className="rounded-lg bg-marigold-soft border border-marigold/30 px-4 py-3 text-fluid-sm text-ink">
+          <div className="rounded-lg bg-accent-soft border border-accent/30 px-4 py-3 text-sm text-ink">
             <p className="font-medium">You have {user?.free_boost_credits} free boost credit{user?.free_boost_credits !== 1 ? "s" : ""}</p>
             <p className="text-ink-muted mt-0.5">Earned by referring classmates. Redeems instantly — no M-Pesa needed.</p>
           </div>
@@ -185,7 +180,7 @@ export function PaymentModal({ open, onClose, purpose, gigId, onSuccess }) {
 
       {method === "stk" && (
         <div className="flex flex-col gap-3">
-          <p className="text-fluid-sm text-ink-muted">
+          <p className="text-sm text-ink-muted">
             Tap below and your phone will prompt you to enter your M-Pesa PIN. The payment confirms automatically — no code to copy.
           </p>
           <Button onClick={handleSTK} loading={submitting} icon={Smartphone} fullWidth>
@@ -194,7 +189,7 @@ export function PaymentModal({ open, onClose, purpose, gigId, onSuccess }) {
           <button
             type="button"
             onClick={() => setMethod("manual")}
-            className="text-fluid-xs text-ink-muted text-center hover:text-ink"
+            className="text-xs text-ink-muted text-center hover:text-ink"
           >
             Not working? Enter code manually instead
           </button>
@@ -203,11 +198,11 @@ export function PaymentModal({ open, onClose, purpose, gigId, onSuccess }) {
 
       {method === "manual" && (
         <form onSubmit={handleManual} className="flex flex-col gap-3">
-          <p className="text-fluid-sm text-ink-muted">
+          <p className="text-sm text-ink-muted">
             Pay to <strong className="text-ink">Till {TILL}</strong> then paste the confirmation code from your SMS below.
           </p>
           <div>
-            <label htmlFor="pm-mpesa-code" className="text-fluid-sm font-medium text-ink">
+            <label htmlFor="pm-mpesa-code" className="text-sm font-medium text-ink">
               M-Pesa confirmation code
             </label>
             <input
@@ -227,7 +222,7 @@ export function PaymentModal({ open, onClose, purpose, gigId, onSuccess }) {
           <button
             type="button"
             onClick={() => setMethod("stk")}
-            className="text-fluid-xs text-ink-muted text-center hover:text-ink inline-flex items-center justify-center gap-1"
+            className="text-xs text-ink-muted text-center hover:text-ink inline-flex items-center justify-center gap-1"
           >
             <RefreshCw className="h-3 w-3" aria-hidden="true" /> Try the phone prompt instead
           </button>
@@ -243,8 +238,8 @@ function MethodTab({ active, onClick, icon: Icon, label }) {
       type="button"
       onClick={onClick}
       className={clsx(
-        "flex flex-1 items-center justify-center gap-1.5 rounded-md px-2 py-2 text-fluid-xs font-medium transition-colors",
-        active ? "bg-ink text-bg" : "text-ink-muted hover:text-ink"
+        "flex flex-1 items-center justify-center gap-1.5 rounded-button px-2 py-2 text-xs font-medium transition-colors",
+        active ? "bg-ink text-surface" : "text-ink-muted hover:text-ink"
       )}
     >
       <Icon className="h-3.5 w-3.5" aria-hidden="true" />

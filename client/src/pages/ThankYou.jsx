@@ -35,11 +35,11 @@ export default function ThankYou() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-moss-soft text-moss-strong mb-5">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-success-soft text-success mb-5">
             <CheckCircle2 className="h-7 w-7" aria-hidden="true" />
           </div>
-          <h1 className="font-display font-semibold text-fluid-2xl">{copy.title}</h1>
-          <p className="mt-3 text-fluid-sm text-ink-muted">
+          <h1 className="font-display font-semibold text-2xl">{copy.title}</h1>
+          <p className="mt-3 text-sm text-ink-muted">
             {gigTitle ? `"${gigTitle}" is posted. ${copy.body}` : copy.body}
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">

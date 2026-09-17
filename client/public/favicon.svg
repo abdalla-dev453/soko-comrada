@@ -1,7 +1,10 @@
-<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Soko Comrada mark">
-  <rect width="64" height="64" rx="14" fill="#142420"/>
-  <path d="M14 24C14 19.5817 17.5817 16 22 16H42C46.4183 16 50 19.5817 50 24V40C50 44.4183 46.4183 48 42 48H22C17.5817 48 14 44.4183 14 40V24Z" fill="#142420"/>
-  <circle cx="14" cy="32" r="4.5" fill="#0F1815"/>
-  <path d="M24 26.5C24 24.567 25.567 23 27.5 23H31.8C33.5673 23 35 24.4327 35 26.2C35 27.7231 33.9398 29.0246 32.4548 29.3355L28.8 30.1C27.1732 30.4409 26 31.8778 26 33.54C26 35.4505 27.5495 37 29.46 37H33.5C35.433 37 37 35.433 37 33.5"
-        stroke="#E8A33D" stroke-width="3.4" stroke-linecap="round" fill="none"/>
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Soko Comrada comrades mark">
+  <rect width="64" height="64" rx="16" fill="#142420"/>
+  <!-- Two friendly comrades, side by side. -->
+  <circle cx="23" cy="23" r="7" fill="#F6D7A7"/>
+  <circle cx="41" cy="23" r="7" fill="#E8A33D"/>
+  <path d="M10 49C10.8 39.9 15.6 34 23 34C30.4 34 35.2 39.9 36 49H10Z" fill="#F6D7A7"/>
+  <path d="M28 49C28.8 39.9 33.6 34 41 34C48.4 34 53.2 39.9 54 49H28Z" fill="#E8A33D"/>
+  <path d="M20 29.5C21.8 31 24.2 31 26 29.5M38 29.5C39.8 31 42.2 31 44 29.5" stroke="#142420" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <path d="M28 40L32 44L36 40" stroke="#142420" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
 </svg>

@@ -3,215 +3,179 @@
 @tailwind utilities;
 
 /* ---------------------------------------------------------------------
-   Theme tokens. Values are "R G B" triplets (no rgb() wrapper) so
-   Tailwind's rgb(var(--x) / <alpha-value>) pattern in tailwind.config.js
-   can apply opacity modifiers like bg-surface/60.
-   ------------------------------------------------------------------- */
+   Soko Comrada — Editorial theme.
+   Strict 60-30-10 color rule: neutral slate/white (60%), dark slate (30%),
+   crisp indigo accent (10%). No gradients, no neon, no glow.
+   --------------------------------------------------------------------- */
+
 :root {
-  --color-bg: 246 244 239;
-  --color-surface: 255 253 248;
-  --color-surface-raised: 255 255 255;
-  --color-ink: 28 32 30;
-  --color-ink-muted: 76 84 79;
-  --color-border: 207 211 205;
-  --color-coral: 232 87 47;
-  --color-lilac: 119 93 196;
+  /* Light theme tokens (R G B triplets so Tailwind's rgb(var(--x) / <alpha>)
+     opacity modifiers stay valid, and direct rgb(var(--x)) calls work too). */
+  --color-ink: 11 18 32;
+  --color-ink-muted: 91 100 114;
+  --color-ink-faint: 138 147 163;
+  --color-surface: 255 255 255;
+  --color-surface-raised: 246 247 249;
+  --color-border: 228 231 235;
+  --color-accent: 234 88 9;
+  --color-accent-strong: 194 65 7;
+  --color-accent-soft: 255 237 213;
+  --color-accent-muted: 252 211 77;
+  --color-success: 22 163 74;
+  --color-success-soft: 220 252 231;
+  --color-danger: 220 38 38;
+  --color-danger-soft: 254 226 226;
+  --color-warning: 217 119 6;
+  --color-warning-soft: 254 243 199;
 }
 
 .dark {
-  --color-bg: 11 13 18;
-  --color-surface: 20 24 32;
-  --color-surface-raised: 27 32 42;
-  --color-ink: 244 242 237;
+  --color-ink: 244 244 240;
   --color-ink-muted: 163 163 156;
+  --color-ink-faint: 120 120 112;
+  --color-surface: 28 31 36;
+  --color-surface-raised: 40 44 50;
   --color-border: 55 59 68;
-  --color-coral: 255 117 80;
-  --color-lilac: 167 139 250;
+  --color-accent: 251 146 38;
+  --color-accent-strong: 252 211 77;
+  --color-accent-soft: 120 39 16;
+  --color-accent-muted: 254 215 170;
+  --color-success: 74 222 128;
+  --color-success-soft: 22 63 38;
+  --color-danger: 248 113 113;
+  --color-danger-soft: 127 29 29;
+  --color-warning: 251 191 36;
+  --color-warning-soft: 120 53 11;
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  html {
-    color-scheme: light;
-  }
-  html.dark {
-    color-scheme: dark;
-  }
-
-  body {
-    @apply bg-bg text-ink font-body antialiased;
-    font-feature-settings: "ss01" 1;
-    text-rendering: optimizeLegibility;
-    font-size: 1rem;
-    font-weight: 500;
-    background-image: radial-gradient(circle at 10% 10%, rgb(var(--color-coral) / 0.08), transparent 25%), radial-gradient(circle at 90% 20%, rgb(var(--color-lilac) / 0.08), transparent 25%);
-  }
-
-  h1,
-  h2,
-  h3,
-  h4 {
-    @apply font-display text-ink;
-    font-variation-settings:
-      "SOFT" 40,
-      "WONK" 1;
-  }
-
-  h1,
-  h2,
-  h3 {
-    letter-spacing: -0.02em;
-    font-weight: 750;
-  }
-
-  h4,
-  button,
-  label,
-  a {
-    font-weight: 650;
-  }
-
-  /* Visible keyboard focus everywhere — never suppressed. */
-  :focus-visible {
-    outline: 2px solid theme("colors.marigold.DEFAULT");
-    outline-offset: 2px;
-    border-radius: 2px;
-  }
-
-  ::selection {
-    background-color: theme("colors.marigold.soft");
-    color: theme("colors.ink");
-  }
-
-  /* Respect reduced-motion preferences — Framer Motion components read
-     this too (see utils/motion.js), this covers plain CSS animation. */
-  @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-      scroll-behavior: auto !important;
-    }
-  }
+/* ---------------------------------------------------------------------
+   Base reset. No radial gradients, no glow, no neon on the body.
+   --------------------------------------------------------------------- */
+* {
+  border-color: rgb(var(--color-border));
 }
 
-@layer components {
-  /* Ticket-stub gig card: notched left edge via a repeating radial
-     gradient "punch" mask, plus a solid status spine set per-instance
-     via the --spine custom property. This is the one recurring
-     structural motif in the whole UI — everything else stays quiet. */
-  .ticket {
-    position: relative;
-    overflow: hidden;
-    border-radius: theme("borderRadius.ticket");
-    transition: transform 220ms ease, box-shadow 220ms ease;
-    background-image: radial-gradient(
-      circle at 0 50%,
-      transparent 0,
-      transparent 6px,
-      transparent 6px
-    );
-  }
+html,
+body {
+  background-color: rgb(var(--color-surface));
+  color: rgb(var(--color-ink));
+  font-family: "Source Sans 3", system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "ss01" 1;
+}
 
-  .ticket:hover {
-    transform: translateY(-4px);
-  }
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Fraunces", serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: rgb(var(--color-ink));
+}
 
-  .ticket:hover::before {
-    filter: brightness(1.2);
-  }
+a {
+  font-weight: 650;
+}
 
-  .vibrant-hero {
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
-    background: linear-gradient(135deg, rgb(var(--color-surface) / 0.9), rgb(var(--color-moss, 76 122 93) / 0.1));
-  }
+:focus-visible {
+  outline: 2px solid rgb(var(--color-accent));
+  outline-offset: 2px;
+}
 
-  .vibrant-hero::before,
-  .vibrant-hero::after {
-    content: "";
-    position: absolute;
-    z-index: -1;
-    width: 18rem;
-    height: 18rem;
-    border-radius: 999px;
-    filter: blur(12px);
-    pointer-events: none;
-    animation: soft-pulse 5s ease-in-out infinite;
-  }
+::selection {
+  background-color: rgb(var(--color-accent-soft));
+  color: rgb(var(--color-ink));
+}
 
-  .vibrant-hero::before {
-    top: -8rem;
-    right: -5rem;
-    background: rgb(var(--color-coral) / 0.2);
-  }
+/* ---------------------------------------------------------------------
+   Editorial display type. Tight tracking on headings only.
+   --------------------------------------------------------------------- */
+h1 {
+  font-size: 2.5rem;
+  line-height: 1.25;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
 
-  .vibrant-hero::after {
-    bottom: -10rem;
-    left: -7rem;
-    background: rgb(var(--color-lilac) / 0.14);
-    animation-delay: -2s;
-  }
+h2 {
+  font-size: 2rem;
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+  font-weight: 700;
+}
 
-  .ticket::before {
-    content: "";
-    position: absolute;
-    inset: 0 auto 0 0;
-    width: 6px;
-    background-color: var(--spine, theme("colors.moss.DEFAULT"));
-    border-top-left-radius: theme("borderRadius.ticket");
-    border-bottom-left-radius: theme("borderRadius.ticket");
-  }
+h3 {
+  font-size: 1.125rem;
+  line-height: 1.4;
+  letter-spacing: -0.015em;
+  font-weight: 650;
+}
 
-  .ticket::after {
-    content: "";
-    position: absolute;
-    left: 5px;
-    top: 50%;
-    width: 10px;
-    height: 10px;
-    background: rgb(var(--color-bg));
-    border-radius: 9999px;
-    transform: translate(-50%, -50%);
+h4 {
+  font-size: 1rem;
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  font-weight: 650;
+}
+
+/* ---------------------------------------------------------------------
+   Utility: hide scrollbar on filter tabs.
+   --------------------------------------------------------------------- */
+.scrollbar-none {
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---------------------------------------------------------------------
+   Flat card surface. No ticket notch, no radial punch, no status spine.
+   --------------------------------------------------------------------- */
+.card {
+  background-color: rgb(var(--color-surface-raised));
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 4px 16px rgba(15, 23, 42, 0.05);
+}
+
+/* ---------------------------------------------------------------------
+   Flat success / danger / warning state panels.
+   --------------------------------------------------------------------- */
+.success-panel {
+  background-color: rgb(var(--color-success-soft));
+  color: rgb(var(--color-success));
+}
+
+.danger-panel {
+  background-color: rgb(var(--color-danger-soft));
+  color: rgb(var(--color-danger));
+}
+
+.warning-panel {
+  background-color: rgb(var(--color-warning-soft));
+  color: rgb(var(--color-warning));
+}
+
+/* ---------------------------------------------------------------------
+   Soft-pulse is retained only for the loading spinner dot — a single
+   breathing element, not a decorative background.
+   --------------------------------------------------------------------- */
+@keyframes soft-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
   }
 }
 
-@layer utilities {
-  .scrollbar-none {
-    scrollbar-width: none;
-  }
-
-  .text-gradient {
-    background: linear-gradient(110deg, theme("colors.marigold.DEFAULT"), rgb(var(--color-coral)), rgb(var(--color-lilac)));
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    animation: shimmer 5s linear infinite;
-  }
-
-  .live-dot {
-    position: relative;
-  }
-
-  .live-dot::before {
-    content: "";
-    display: inline-block;
-    width: 0.5rem;
-    height: 0.5rem;
-    margin-right: 0.45rem;
-    border-radius: 999px;
-    background: rgb(var(--color-coral));
-    box-shadow: 0 0 0 0 rgb(var(--color-coral) / 0.45);
-    animation: soft-pulse 2s ease-in-out infinite;
-  }
-  .scrollbar-none::-webkit-scrollbar {
-    display: none;
-  }
+.pulse-dot {
+  animation: soft-pulse 2s ease-in-out infinite;
 }

@@ -59,19 +59,20 @@ export default function Home() {
         path="/"
       />
 
-      <section className="vibrant-hero mx-auto max-w-6xl rounded-[2rem] px-4 pt-14 pb-16 sm:px-8 sm:pt-20 sm:pb-24">
-        <motion.div variants={heroContainer} initial="hidden" animate="show" className="max-w-3xl">
-          <motion.p variants={heroItem} className="live-dot mb-4 text-fluid-sm font-bold uppercase tracking-[0.12em] text-marigold-strong dark:text-marigold">
-            Built for one campus at a time — starting with MUT- MURANG'A
+      <section className="relative isolate mx-auto max-w-6xl overflow-hidden rounded-b-card border-b border-border bg-gradient-to-br from-accent-soft to-surface-raised px-4 pt-16 pb-20 dark:from-accent-soft/20 sm:px-6">
+        <div className="-z-1 absolute top-[-6rem] right-[-6rem] h-80 w-80 -translate-y-1/4 rounded-full bg-accent-soft blur-3xl" />
+        <motion.div variants={heroContainer} initial="hidden" animate="show" className="relative max-w-3xl">
+          <motion.p variants={heroItem} className="mb-4 text-xs font-semibold uppercase tracking-[0.08em] text-accent">
+            Built for one campus at a time — starting with MUT, Murang'a
           </motion.p>
           <motion.h1
             variants={heroItem}
-            className="font-display font-bold text-fluid-hero tracking-tight text-gradient"
+            className="font-display font-bold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-ink"
           >
             The hustle economy your campus already runs, minus the scams.
           </motion.h1>
-          <motion.p variants={heroItem} className="mt-6 text-fluid-lg text-ink-muted max-w-2xl">
-            ComradePLug turns your class group chats' informal gig economy into a real
+          <motion.p variants={heroItem} className="mt-6 text-lg text-ink-muted max-w-2xl">
+            ComradePlug turns your class group chats' informal gig economy into a real
             marketplace: verified students, visible ratings, and a fair price — all
             scoped to your own campus.
           </motion.p>
@@ -99,14 +100,14 @@ export default function Home() {
         </motion.div>
       </section>
 
-      <section className="border-y border-border bg-surface">
-        <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+      <section className="bg-surface-raised">
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
           <motion.h2
             variants={sectionReveal}
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.35 }}
-            className="font-display font-bold text-fluid-2xl mb-10 max-w-xl"
+            className="font-display font-bold text-2xl mb-10 max-w-xl"
           >
             Three steps, no group chat required
           </motion.h2>
@@ -118,12 +119,12 @@ export default function Home() {
             className="grid gap-8 sm:grid-cols-3"
           >
             {STEPS.map((step) => (
-              <motion.div key={step.number} variants={cardReveal} className="group rounded-2xl border-border bg-bg/40 p-5 shadow-card transition-colors hover:border-marigold/60">
-                <span className="inline-flex animate-float font-display font-bold text-fluid-2xl text-marigold-strong">
+              <motion.div key={step.number} variants={cardReveal} className="card border border-border p-5 shadow-card hover:border-accent/50">
+                <span className="inline-flex font-display font-bold text-2xl text-accent">
                   {step.number}
                 </span>
-                <h3 className="mt-4 font-display font-bold text-fluid-lg">{step.title}</h3>
-                <p className="mt-2 text-fluid-sm text-ink-muted">{step.description}</p>
+                <h3 className="mt-4 font-display font-bold text-lg">{step.title}</h3>
+                <p className="mt-2 text-sm text-ink-muted">{step.description}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -132,10 +133,10 @@ export default function Home() {
 
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
         <div className="flex items-end justify-between gap-4 mb-8">
-          <h2 className="font-display font-bold text-fluid-2xl">Open on campus right now</h2>
+          <h2 className="font-display font-bold text-2xl">Open on campus right now</h2>
           <Link
             to="/gigs"
-            className="hidden sm:inline-flex items-center gap-1 text-fluid-sm font-medium text-ink-muted hover:text-ink transition-colors"
+            className="hidden sm:inline-flex items-center gap-1 text-sm font-medium text-ink-muted hover:text-ink transition-colors"
           >
             View all <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
@@ -143,7 +144,7 @@ export default function Home() {
 
         {gigs === null && <GigFeedSkeleton count={3} />}
         {gigs && gigs.length === 0 && (
-          <p className="text-fluid-sm text-ink-muted">
+          <p className="text-sm text-ink-muted">
             No open gigs yet on the pilot campus —{" "}
             <Link to="/gigs/new" className="text-ink underline decoration-dotted">
               be the first to post one
@@ -168,40 +169,40 @@ export default function Home() {
         )}
       </section>
 
-      <section className="border-t border-border bg-ink text-surface">
+      <section className="bg-ink text-surface">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
           <div className="grid gap-8 sm:grid-cols-3">
             <div className="flex gap-3">
-              <ShieldCheck className="h-6 w-6 flex-shrink-0 text-marigold" aria-hidden="true" />
+              <ShieldCheck className="h-6 w-6 flex-shrink-0 text-accent" aria-hidden="true" />
               <div>
-                <h3 className="font-display font-semibold text-fluid-base">
+                <h3 className="font-display font-semibold text-base">
                   Verified by student email
                 </h3>
-                <p className="mt-1 text-fluid-sm text-surface/70">
+                <p className="mt-1 text-sm text-surface/70">
                   Registration is restricted to recognized .ac.ke domains, so you know
                   who you're dealing with.
                 </p>
               </div>
             </div>
             <div className="flex gap-3">
-              <MapPinned className="h-6 w-6 flex-shrink-0 text-marigold" aria-hidden="true" />
+              <MapPinned className="h-6 w-6 flex-shrink-0 text-accent" aria-hidden="true" />
               <div>
-                <h3 className="font-display font-semibold text-fluid-base">
+                <h3 className="font-display font-semibold text-base">
                   Scoped to your campus
                 </h3>
-                <p className="mt-1 text-fluid-sm text-surface/70">
+                <p className="mt-1 text-sm text-surface/70">
                   You're not competing with the whole city — just the people you'll
                   actually run into.
                 </p>
               </div>
             </div>
             <div className="flex gap-3">
-              <Clock className="h-6 w-6 flex-shrink-0 text-marigold" aria-hidden="true" />
+              <Clock className="h-6 w-6 flex-shrink-0 text-accent" aria-hidden="true" />
               <div>
-                <h3 className="font-display font-semibold text-fluid-base">
+                <h3 className="font-display font-semibold text-base">
                   Built for "I need this in 2 hours"
                 </h3>
-                <p className="mt-1 text-fluid-sm text-surface/70">
+                <p className="mt-1 text-sm text-surface/70">
                   Flag a gig urgent and it stands out in the feed — no channel for this
                   existed before.
                 </p>
@@ -212,9 +213,9 @@ export default function Home() {
           <div className="mt-14 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-1.5">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="h-4 w-4 fill-marigold text-marigold" aria-hidden="true" />
+                <Star key={i} className="h-4 w-4 fill-accent text-accent" aria-hidden="true" />
               ))}
-              <span className="ml-2 text-fluid-sm text-surface/70">
+              <span className="ml-2 text-sm text-surface/70">
                 Rated by students who've actually used it
               </span>
             </div>

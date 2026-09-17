@@ -27,24 +27,24 @@ export default function NotFound() {
             >
               <rect x="4" y="4" width="192" height="102" rx="10" className="fill-surface stroke-border" strokeWidth="2" />
               <line x1="70" y1="10" x2="70" y2="100" strokeDasharray="6 6" className="stroke-border" strokeWidth="2" />
-              <circle cx="70" cy="4" r="7" className="fill-bg" />
-              <circle cx="70" cy="106" r="7" className="fill-bg" />
-              <text x="37" y="63" textAnchor="middle" className="fill-ink" fontFamily="'Space Grotesk', sans-serif" fontWeight="700" fontSize="30">
+              <circle cx="70" cy="4" r="7" className="fill-surface" />
+              <circle cx="70" cy="106" r="7" className="fill-surface" />
+              <text x="37" y="63" textAnchor="middle" className="fill-ink" fontFamily="'Fraunces', serif" fontWeight="700" fontSize="30">
                 404
               </text>
-              <text x="135" y="50" textAnchor="middle" className="fill-ink-muted" fontFamily="'Work Sans', sans-serif" fontSize="12">
+              <text x="135" y="50" textAnchor="middle" className="fill-ink-muted" fontFamily="'Source Sans 3', sans-serif" fontSize="12">
                 GIG
               </text>
-              <text x="135" y="66" textAnchor="middle" className="fill-ink-muted" fontFamily="'Work Sans', sans-serif" fontSize="12">
+              <text x="135" y="66" textAnchor="middle" className="fill-ink-muted" fontFamily="'Source Sans 3', sans-serif" fontSize="12">
                 NOT FOUND
               </text>
             </motion.svg>
           </motion.div>
 
-          <motion.h1 variants={heroItem} className="font-display font-semibold text-fluid-2xl">
+          <motion.h1 variants={heroItem} className="font-display font-semibold text-2xl">
             This one skipped town.
           </motion.h1>
-          <motion.p variants={heroItem} className="mt-3 text-fluid-sm text-ink-muted">
+          <motion.p variants={heroItem} className="mt-3 text-sm text-ink-muted">
             The gig or page you're after was taken, expired, or never existed. Let's get
             you back to something real.
           </motion.p>

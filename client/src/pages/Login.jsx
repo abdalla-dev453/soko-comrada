@@ -58,8 +58,8 @@ export default function Login() {
       />
       <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-4 py-16 sm:px-6">
         <motion.div variants={heroItem} initial="hidden" animate="show">
-          <h1 className="font-display font-semibold text-fluid-2xl">Welcome back</h1>
-          <p className="mt-2 text-fluid-sm text-ink-muted">
+          <h1 className="font-display font-semibold text-2xl">Welcome back</h1>
+          <p className="mt-2 text-sm text-ink-muted">
             Log in with the student email you registered with.
           </p>
 
@@ -67,7 +67,7 @@ export default function Login() {
             {formError && <ErrorBanner message={formError} onDismiss={() => setFormError("")} />}
 
             <div>
-              <label htmlFor="email" className="text-fluid-sm font-medium text-ink">
+              <label htmlFor="email" className="text-sm font-medium text-ink">
                 Student email
               </label>
               <input
@@ -83,7 +83,7 @@ export default function Login() {
             </div>
 
             <div>
-              <label htmlFor="password" className="text-fluid-sm font-medium text-ink">
+              <label htmlFor="password" className="text-sm font-medium text-ink">
                 Password
               </label>
               <input
@@ -103,7 +103,7 @@ export default function Login() {
             </Button>
           </form>
 
-          <p className="mt-6 text-fluid-sm text-ink-muted text-center">
+          <p className="mt-6 text-sm text-ink-muted text-center">
             New to Soko Comrada?{" "}
             <Link to="/register" className="text-ink underline decoration-dotted">
               Create an account

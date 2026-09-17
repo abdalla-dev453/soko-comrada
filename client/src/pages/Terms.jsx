@@ -40,8 +40,8 @@ export default function Terms() {
         path="/terms"
       />
       <div className="mx-auto max-w-2xl px-4 py-14 sm:px-6">
-        <h1 className="font-display font-semibold text-fluid-2xl">Terms of service</h1>
-        <p className="mt-2 text-fluid-sm text-ink-muted">
+        <h1 className="font-display font-semibold text-2xl">Terms of service</h1>
+        <p className="mt-2 text-sm text-ink-muted">
           Last updated September 2026 · Pilot version — this is a working template and
           should be reviewed by counsel before public launch.
         </p>
@@ -49,8 +49,8 @@ export default function Terms() {
         <div className="mt-10 flex flex-col gap-8">
           {SECTIONS.map((section) => (
             <section key={section.heading}>
-              <h2 className="font-display font-semibold text-fluid-lg mb-2">{section.heading}</h2>
-              <p className="text-fluid-sm text-ink-muted leading-relaxed">{section.body}</p>
+              <h2 className="font-display font-semibold text-lg mb-2">{section.heading}</h2>
+              <p className="text-sm text-ink-muted leading-relaxed">{section.body}</p>
             </section>
           ))}
         </div>

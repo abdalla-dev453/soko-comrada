@@ -40,8 +40,8 @@ export function DisputeModal({ open, onClose, gigId, onDisputed }) {
 
   return (
     <Modal open={open} onClose={onClose} title="Dispute this completion">
-      <div className="flex items-start gap-2 rounded-lg bg-coral-soft px-3 py-2.5 text-fluid-xs text-ink mb-4">
-        <ShieldAlert className="h-4 w-4 flex-shrink-0 text-coral-strong mt-0.5" aria-hidden="true" />
+      <div className="flex items-start gap-2 rounded-lg bg-danger-soft px-3 py-2.5 text-xs text-ink mb-4">
+        <ShieldAlert className="h-4 w-4 flex-shrink-0 text-danger mt-0.5" aria-hidden="true" />
         <span>
           Filing a dispute pauses the completion. An admin reviews both sides' accounts
           and resolves it — don't do this unless work genuinely wasn't done.
@@ -50,7 +50,7 @@ export function DisputeModal({ open, onClose, gigId, onDisputed }) {
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <div>
-          <label htmlFor="dispute-reason" className="text-fluid-sm font-medium text-ink">
+          <label htmlFor="dispute-reason" className="text-sm font-medium text-ink">
             What happened?
           </label>
           <textarea

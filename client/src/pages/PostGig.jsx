@@ -103,18 +103,27 @@ export default function PostGig() {
 
     setSubmitting(true);
     try {
-      const gig = await createGig({
-        ...form,
+      const payload = {
         title: form.title.trim(),
         description: form.description.trim(),
         budget: form.budget,
-        landmark: form.landmark.trim() || undefined,
-        hostel_location: form.hostel_location.trim() || undefined,
+        price_type: form.price_type,
+        gig_type: form.gig_type,
+        category: form.category,
+        campus_location: form.campus_location.trim(),
+        landmark: [form.hostel_location.trim(), form.landmark.trim()]
+          .filter(Boolean)
+          .join(", ") || undefined,
+        is_urgent: form.is_urgent,
         slots_needed: parseInt(form.slots_needed, 10) || 1,
         deliverables: form.deliverables
           ? form.deliverables.split(",").map((d) => d.trim()).filter(Boolean)
           : [],
-      });
+      };
+
+      if (form.deadline) payload.deadline = new Date(form.deadline).toISOString();
+
+      const gig = await createGig(payload);
       toast({
         variant: "success",
         title: "Gig submitted",
@@ -140,8 +149,8 @@ export default function PostGig() {
       />
       <div className="mx-auto max-w-xl px-4 py-12 sm:px-6">
         <motion.div variants={heroItem} initial="hidden" animate="show">
-          <h1 className="font-display font-semibold text-fluid-2xl">Post a gig</h1>
-          <p className="mt-2 text-fluid-sm text-ink-muted">
+          <h1 className="font-display font-semibold text-2xl">Post a gig</h1>
+          <p className="mt-2 text-sm text-ink-muted">
             Be specific — a clear task with a fair budget gets picked up fastest.
           </p>
 
@@ -149,7 +158,7 @@ export default function PostGig() {
             {formError && <ErrorBanner message={formError} onDismiss={() => setFormError("")} />}
 
             <div>
-              <label htmlFor="title" className="text-fluid-sm font-medium text-ink">
+              <label htmlFor="title" className="text-sm font-medium text-ink">
                 Title
               </label>
               <input
@@ -163,7 +172,7 @@ export default function PostGig() {
             </div>
 
             <div>
-              <label htmlFor="description" className="text-fluid-sm font-medium text-ink">
+              <label htmlFor="description" className="text-sm font-medium text-ink">
                 Description
               </label>
               <textarea
@@ -179,7 +188,7 @@ export default function PostGig() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label htmlFor="budget" className="text-fluid-sm font-medium text-ink">
+                <label htmlFor="budget" className="text-sm font-medium text-ink">
                   Budget (KES)
                 </label>
                 <input
@@ -196,7 +205,7 @@ export default function PostGig() {
               </div>
 
               <div>
-                <label htmlFor="price_type" className="text-fluid-sm font-medium text-ink">
+                <label htmlFor="price_type" className="text-sm font-medium text-ink">
                   Price type
                 </label>
                 <select
@@ -213,7 +222,7 @@ export default function PostGig() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label htmlFor="category" className="text-fluid-sm font-medium text-ink">
+                <label htmlFor="category" className="text-sm font-medium text-ink">
                   Category
                 </label>
                 <select
@@ -235,7 +244,7 @@ export default function PostGig() {
 
               {SUBCATEGORIES[form.category] && (
                 <div>
-                  <label htmlFor="subcategory" className="text-fluid-sm font-medium text-ink">
+                  <label htmlFor="subcategory" className="text-sm font-medium text-ink">
                     Sub-category
                   </label>
                   <select
@@ -256,7 +265,7 @@ export default function PostGig() {
             </div>
 
             <div>
-              <label htmlFor="deadline" className="text-fluid-sm font-medium text-ink">
+              <label htmlFor="deadline" className="text-sm font-medium text-ink">
                 Completion deadline <span className="text-ink-muted font-normal">(optional)</span>
               </label>
               <input
@@ -267,12 +276,12 @@ export default function PostGig() {
                 className={`${fieldClasses(Boolean(fieldErrors.deadline))} mt-1`}
               />
               {fieldErrors.deadline && (
-                <p className="mt-1 text-fluid-xs text-coral">{fieldErrors.deadline}</p>
+                <p className="mt-1 text-xs text-danger">{fieldErrors.deadline}</p>
               )}
             </div>
 
             <div>
-              <label htmlFor="deliverables" className="text-fluid-sm font-medium text-ink">
+              <label htmlFor="deliverables" className="text-sm font-medium text-ink">
                 Deliverables <span className="text-ink-muted font-normal">(comma-separated)</span>
               </label>
               <input
@@ -282,14 +291,14 @@ export default function PostGig() {
                 onChange={set("deliverables")}
                 className={fieldClasses(false)}
               />
-              <p className="mt-1 text-fluid-xs text-ink-muted">
+              <p className="mt-1 text-xs text-ink-muted">
                 What you'll receive when this is done.
               </p>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label htmlFor="campus_location" className="text-fluid-sm font-medium text-ink">
+                <label htmlFor="campus_location" className="text-sm font-medium text-ink">
                   Campus
                 </label>
                 <input
@@ -303,7 +312,7 @@ export default function PostGig() {
               </div>
 
               <div>
-                <label htmlFor="hostel_location" className="text-fluid-sm font-medium text-ink">
+                <label htmlFor="hostel_location" className="text-sm font-medium text-ink">
                   Hostel / area <span className="text-ink-muted font-normal">(optional)</span>
                 </label>
                 <input
@@ -318,7 +327,7 @@ export default function PostGig() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label htmlFor="landmark" className="text-fluid-sm font-medium text-ink">
+                <label htmlFor="landmark" className="text-sm font-medium text-ink">
                   Nearest landmark <span className="text-ink-muted font-normal">(optional)</span>
                 </label>
                 <input
@@ -328,13 +337,13 @@ export default function PostGig() {
                   onChange={set("landmark")}
                   className={`${fieldClasses(false)} mt-1`}
                 />
-                <p className="mt-1 text-fluid-xs text-ink-muted">
+                <p className="mt-1 text-xs text-ink-muted">
                   Helps applicants know where to find you.
                 </p>
               </div>
 
               <div>
-                <label htmlFor="slots_needed" className="text-fluid-sm font-medium text-ink">
+                <label htmlFor="slots_needed" className="text-sm font-medium text-ink">
                   People needed
                 </label>
                 <input
@@ -346,18 +355,18 @@ export default function PostGig() {
                   onChange={set("slots_needed")}
                   className={`${fieldClasses(false)} mt-1`}
                 />
-                <p className="mt-1 text-fluid-xs text-ink-muted">
+                <p className="mt-1 text-xs text-ink-muted">
                   For moving, events, group help.
                 </p>
               </div>
             </div>
 
-            <label className="flex items-center gap-2 text-fluid-sm text-ink cursor-pointer select-none">
+            <label className="flex items-center gap-2 text-sm text-ink cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={form.is_urgent}
                 onChange={set("is_urgent")}
-                className="h-4 w-4 rounded border-border text-coral focus:ring-coral/40"
+                className="h-4 w-4 rounded border-border text-accent focus:ring-accent/20"
               />
               This can't wait — flag it urgent
             </label>

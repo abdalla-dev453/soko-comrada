@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { MapPin, MapPinned, Zap, TrendingUp, Star, Flag, ShieldAlert, Clock, AlertOctagon } from "lucide-react";
@@ -48,13 +48,14 @@ export default function GigDetail() {
 
   const isPoster = gig && user && gig.poster_id === user.id;
 
-  const load = async () => {
+  const userId = user?.id;
+  const load = useCallback(async () => {
     setLoading(true);
     setLoadError("");
     try {
       const gigData = await fetchGig(gigId);
       setGig(gigData);
-      if (isAuthenticated && user && gigData.poster_id === user.id) {
+      if (isAuthenticated && userId && gigData.poster_id === userId) {
         setApplications(await fetchGigApplications(gigId));
       }
     } catch (err) {
@@ -62,12 +63,11 @@ export default function GigDetail() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [gigId, isAuthenticated, userId]);
 
   useEffect(() => {
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gigId, isAuthenticated]);
+  }, [load]);
 
   const handleApply = async (e) => {
     e.preventDefault();
@@ -107,11 +107,9 @@ export default function GigDetail() {
       const result = await completeGig(gigId);
       await load();
       if (result.needs_review) {
-        // Both parties confirmed — gig is done, prompt for a review.
         toast({ variant: "success", title: "Gig completed", description: "Leave a review when you're ready." });
         setReviewOpen(true);
       } else {
-        // First confirmation — waiting on the other party.
         toast({
           title: "Completion requested",
           description: `Waiting on the ${result.awaiting_confirmation_from} to confirm. They have 48 hours.`,
@@ -130,7 +128,7 @@ export default function GigDetail() {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
         <ErrorBanner title="Gig not found" message={loadError || "This gig may have been removed."} />
-        <Link to="/gigs" className="mt-4 inline-block text-fluid-sm text-ink underline decoration-dotted">
+        <Link to="/gigs" className="mt-4 inline-block text-sm text-ink underline decoration-dotted">
           Back to all gigs
         </Link>
       </div>
@@ -156,19 +154,19 @@ export default function GigDetail() {
 
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }}>
-          <div className="flex flex-wrap items-center gap-2 text-fluid-xs text-ink-muted mb-3">
+          <div className="flex flex-wrap items-center gap-2 text-xs text-ink-muted mb-3">
             <span className="inline-flex items-center gap-1">
               <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
               {gig.campus_location}
             </span>
             <span className="rounded-full bg-ink/5 px-2 py-0.5">{gig.category}</span>
             {gig.is_urgent && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-coral-soft px-2 py-0.5 text-coral-strong font-medium">
+              <span className="inline-flex items-center gap-1 rounded-full bg-warning-soft px-2 py-0.5 text-warning font-medium">
                 <Zap className="h-3 w-3" aria-hidden="true" /> Urgent
               </span>
             )}
             {gig.is_boosted && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-marigold-soft px-2 py-0.5 text-marigold-strong font-medium">
+              <span className="inline-flex items-center gap-1 rounded-full bg-accent-soft px-2 py-0.5 text-accent font-medium">
                 <TrendingUp className="h-3 w-3" aria-hidden="true" /> Boosted
               </span>
             )}
@@ -178,15 +176,15 @@ export default function GigDetail() {
               </span>
             )}
             {gig.status === "DISPUTED" && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-coral-soft px-2 py-0.5 text-coral-strong font-medium">
+              <span className="inline-flex items-center gap-1 rounded-full bg-danger-soft px-2 py-0.5 text-danger font-medium">
                 <AlertOctagon className="h-3 w-3" aria-hidden="true" /> Disputed
               </span>
             )}
           </div>
 
           <div className="flex items-start justify-between gap-4">
-            <h1 className="font-display font-semibold text-fluid-2xl">{gig.title}</h1>
-            <span className="flex-shrink-0 font-display font-semibold text-fluid-xl">
+            <h1 className="font-display font-semibold text-2xl">{gig.title}</h1>
+            <span className="flex-shrink-0 font-display font-semibold text-xl">
               {formatCurrency(gig.budget)}
             </span>
           </div>
@@ -194,12 +192,12 @@ export default function GigDetail() {
           {gig.poster && (
             <Link
               to={`/users/${gig.poster.id}`}
-              className="mt-3 inline-flex items-center gap-2 text-fluid-sm text-ink-muted hover:text-ink"
+              className="mt-3 inline-flex items-center gap-2 text-sm text-ink-muted hover:text-ink"
             >
               Posted by <span className="text-ink font-medium">{gig.poster.name}</span>
               {gig.poster.avg_rating != null && (
                 <span className="inline-flex items-center gap-1">
-                  <Star className="h-3.5 w-3.5 fill-marigold text-marigold" aria-hidden="true" />
+                  <Star className="h-3.5 w-3.5 fill-accent text-accent" aria-hidden="true" />
                   {gig.poster.avg_rating.toFixed(1)}
                 </span>
               )}
@@ -207,27 +205,27 @@ export default function GigDetail() {
           )}
 
           {gig.landmark && (
-            <p className="mt-2 inline-flex items-center gap-1 text-fluid-sm text-ink-muted">
+            <p className="mt-2 inline-flex items-center gap-1 text-sm text-ink-muted">
               <MapPinned className="h-3.5 w-3.5" aria-hidden="true" />
               Near {gig.landmark}
             </p>
           )}
 
           {gig.slots_needed > 1 && (
-            <p className="mt-2 text-fluid-sm text-ink-muted">
+            <p className="mt-2 text-sm text-ink-muted">
               {gig.slots_filled} of {gig.slots_needed} spots filled
             </p>
           )}
 
           {gig.status === "PENDING_CONFIRMATION" && gig.confirmation_deadline && (
-            <div className="mt-4 rounded-lg border border-border bg-surface px-4 py-3 text-fluid-sm text-ink-muted">
+            <div className="mt-4 rounded-lg border border-border bg-surface-raised px-4 py-3 text-sm text-ink-muted">
               <span className="font-medium text-ink">Awaiting confirmation</span> — the other party has until{" "}
               {new Date(gig.confirmation_deadline).toLocaleString("en-KE", { dateStyle: "medium", timeStyle: "short" })} to
               confirm or dispute. If they don't act, the gig auto-completes.
             </div>
           )}
 
-          <p className="mt-6 text-fluid-base text-ink whitespace-pre-line leading-relaxed">
+          <p className="mt-6 text-base text-ink whitespace-pre-line leading-relaxed">
             {gig.description}
           </p>
 
@@ -265,33 +263,33 @@ export default function GigDetail() {
           </div>
 
           {isPoster && applications && (
-            <div className="mt-10 border-t border-border pt-8">
-              <h2 className="font-display font-semibold text-fluid-lg mb-4">
+            <div className="mt-10 pt-8">
+              <h2 className="font-display font-semibold text-lg mb-4">
                 Applicants ({applications.length})
               </h2>
               {applications.length === 0 ? (
-                <p className="text-fluid-sm text-ink-muted">No applications yet.</p>
+                <p className="text-sm text-ink-muted">No applications yet.</p>
               ) : (
                 <ul className="flex flex-col gap-3">
                   {applications.map((app) => (
                     <li
                       key={app.id}
-                      className="rounded-lg border border-border bg-surface p-4 flex items-start justify-between gap-4"
+                      className="rounded-lg border border-border bg-surface-raised p-4 flex items-start justify-between gap-4"
                     >
                       <div>
-                        <p className="font-medium text-fluid-sm">
+                        <p className="font-medium text-sm">
                           {app.applicant.name}{" "}
                           {app.applicant.avg_rating != null && (
-                            <span className="inline-flex items-center gap-1 text-fluid-xs text-ink-muted ml-1">
-                              <Star className="h-3 w-3 fill-marigold text-marigold" aria-hidden="true" />
+                            <span className="inline-flex items-center gap-1 text-xs text-ink-muted ml-1">
+                              <Star className="h-3 w-3 fill-accent text-accent" aria-hidden="true" />
                               {app.applicant.avg_rating.toFixed(1)}
                             </span>
                           )}
                         </p>
                         {app.proposal_text && (
-                          <p className="mt-1 text-fluid-sm text-ink-muted">{app.proposal_text}</p>
+                          <p className="mt-1 text-sm text-ink-muted">{app.proposal_text}</p>
                         )}
-                        <p className="mt-1 text-fluid-xs text-ink-muted">Status: {app.status}</p>
+                        <p className="mt-1 text-xs text-ink-muted">Status: {app.status}</p>
                       </div>
                       {app.status === "PENDING" && (
                         <div className="flex flex-shrink-0 gap-2">
@@ -315,12 +313,12 @@ export default function GigDetail() {
           )}
 
           {canApply && !applied && (
-            <div className="mt-10 border-t border-border pt-8">
-              <h2 className="font-display font-semibold text-fluid-lg mb-3">Apply for this gig</h2>
+            <div className="mt-10 pt-8">
+              <h2 className="font-display font-semibold text-lg mb-3">Apply for this gig</h2>
               <form onSubmit={handleApply} className="flex flex-col gap-3">
                 {applyError && <ErrorBanner message={applyError} onDismiss={() => setApplyError("")} />}
                 <div>
-                  <label htmlFor="proposal" className="text-fluid-sm font-medium text-ink">
+                  <label htmlFor="proposal" className="text-sm font-medium text-ink">
                     A short note to the poster (optional)
                   </label>
                   <textarea
@@ -340,16 +338,16 @@ export default function GigDetail() {
           )}
 
           {applied && (
-            <div className="mt-10 border-t border-border pt-8">
-              <p className="text-fluid-sm text-moss-strong font-medium">
+            <div className="mt-10 pt-8">
+              <p className="text-sm text-success font-medium">
                 Your application is in — the poster will reach out if you're picked.
               </p>
             </div>
           )}
 
           {!isAuthenticated && gig.status === "OPEN" && (
-            <div className="mt-10 border-t border-border pt-8">
-              <p className="text-fluid-sm text-ink-muted">
+            <div className="mt-10 pt-8">
+              <p className="text-sm text-ink-muted">
                 <Link
                   to="/login"
                   state={{ from: `/gigs/${gig.id}` }}
@@ -435,7 +433,7 @@ function ReviewModal({ open, onClose, gigId, revieweeId }) {
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {error && <ErrorBanner message={error} onDismiss={() => setError("")} />}
         <div>
-          <span className="text-fluid-sm font-medium text-ink">Rating</span>
+          <span className="text-sm font-medium text-ink">Rating</span>
           <div className="mt-2 flex gap-1">
             {[1, 2, 3, 4, 5].map((n) => (
               <button
@@ -446,7 +444,7 @@ function ReviewModal({ open, onClose, gigId, revieweeId }) {
                 className="p-1"
               >
                 <Star
-                  className={`h-6 w-6 ${n <= rating ? "fill-marigold text-marigold" : "text-border"}`}
+                  className={`h-6 w-6 ${n <= rating ? "fill-accent text-accent" : "text-border"}`}
                   aria-hidden="true"
                 />
               </button>
@@ -454,7 +452,7 @@ function ReviewModal({ open, onClose, gigId, revieweeId }) {
           </div>
         </div>
         <div>
-          <label htmlFor="review-comment" className="text-fluid-sm font-medium text-ink">
+          <label htmlFor="review-comment" className="text-sm font-medium text-ink">
             Comment (optional)
           </label>
           <textarea
@@ -502,13 +500,13 @@ function ReportModal({ open, onClose, gigId }) {
   return (
     <Modal open={open} onClose={onClose} title="Report this gig">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className="flex items-start gap-2 rounded-lg bg-coral-soft px-3 py-2.5 text-fluid-xs text-ink-muted">
-          <ShieldAlert className="h-4 w-4 flex-shrink-0 text-coral-strong mt-0.5" aria-hidden="true" />
+        <div className="flex items-start gap-2 rounded-lg bg-danger-soft px-3 py-2.5 text-xs text-ink-muted">
+          <ShieldAlert className="h-4 w-4 flex-shrink-0 text-danger mt-0.5" aria-hidden="true" />
           Reports go straight to the admin queue — use this for scams, no-shows, or abuse.
         </div>
         {error && <ErrorBanner message={error} onDismiss={() => setError("")} />}
         <div>
-          <label htmlFor="report-reason" className="text-fluid-sm font-medium text-ink">
+          <label htmlFor="report-reason" className="text-sm font-medium text-ink">
             What happened?
           </label>
           <textarea

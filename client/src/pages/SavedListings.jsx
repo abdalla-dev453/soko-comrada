@@ -40,8 +40,8 @@ export default function SavedListings() {
       />
 
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-        <h1 className="font-display font-semibold text-fluid-2xl mb-2">Saved</h1>
-        <p className="text-fluid-sm text-ink-muted mb-8">
+        <h1 className="font-display font-semibold text-2xl mb-2">Saved</h1>
+        <p className="text-sm text-ink-muted mb-8">
           Your bookmarked gigs, services, and marketplace items.
         </p>
 
@@ -72,12 +72,12 @@ export default function SavedListings() {
             >
               {saved.map((gig) => (
                 <motion.li key={gig.id} variants={{ show: { opacity: 1, y: 0 } }}>
-                  <div className="ticket bg-surface shadow-card pl-6 pr-4 py-4 rounded-ticket">
+                  <div className="card bg-surface-raised shadow-card p-5 rounded-card">
                     <div className="flex items-start justify-between gap-2 mb-2">
-                      <h3 className="font-display font-semibold text-fluid-base line-clamp-2">
+                      <h3 className="font-display font-semibold text-base line-clamp-2">
                         <Link
                           to={`/gigs/${gig.id}`}
-                          className="hover:text-marigold transition-colors"
+                          className="hover:text-accent transition-colors"
                         >
                           {gig.title}
                         </Link>
@@ -91,15 +91,15 @@ export default function SavedListings() {
                         aria-label={`Remove ${gig.title} from saved`}
                       />
                     </div>
-                    <p className="text-fluid-sm text-ink-muted line-clamp-2 mb-3">
+                    <p className="text-sm text-ink-muted line-clamp-2 mb-3">
                       {gig.description}
                     </p>
                     <div className="flex items-center justify-between">
-                      <span className="font-display font-semibold text-fluid-base">
+                      <span className="font-display font-semibold text-base">
                         {gig.budget ? `KES ${gig.budget}` : "Negotiable"}
                       </span>
                       {gig.is_urgent && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-coral-soft px-2 py-0.5 text-fluid-xs font-medium text-coral-strong">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-warning-soft px-2 py-0.5 text-xs font-medium text-warning">
                           <Zap className="h-3 w-3" /> Urgent
                         </span>
                       )}

@@ -25,7 +25,7 @@ export function WhatsAppCTA({
           href={waUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex animate-fade-in items-center justify-center gap-2 rounded-lg bg-[#25D366] px-4 py-3 text-fluid-sm font-medium text-white shadow-card hover:shadow-card-hover transition-shadow"
+          className="inline-flex animate-fade-in items-center justify-center gap-2 rounded-button bg-accent px-4 py-3 text-sm font-medium text-white shadow-card hover:shadow-card-hover transition-shadow"
           onClick={() => trackCtaClick("whatsapp_cta")}
         >
           <MessageCircle className="h-4 w-4" aria-hidden="true" />

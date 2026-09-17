@@ -35,10 +35,6 @@ export default function Contact() {
 
     trackEvent("contact_form_submit");
 
-    // No backend /contact endpoint exists yet — this opens the
-    // person's own mail client with the message prefilled, which
-    // actually reaches CONTACT_EMAIL rather than faking a success
-    // state against an endpoint that isn't there.
     const subject = encodeURIComponent(`Message from ${form.name} via ComradePlug`);
     const body = encodeURIComponent(`${form.message}\n\n— ${form.name} (${form.email})`);
     window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
@@ -57,27 +53,27 @@ export default function Contact() {
       <div className="mx-auto max-w-4xl px-4 py-14 sm:px-6">
         <motion.div variants={heroItem} initial="hidden" animate="show" className="grid gap-12 md:grid-cols-2">
           <div>
-            <h1 className="font-display font-semibold text-fluid-2xl">Talk to us</h1>
-            <p className="mt-3 text-fluid-sm text-ink-muted leading-relaxed">
+            <h1 className="font-display font-semibold text-2xl">Talk to us</h1>
+            <p className="mt-3 text-sm text-ink-muted leading-relaxed">
               Question about how ComradePlug works, a trust & safety concern, or want us
               on your campus next? We read everything that comes through here.
             </p>
 
             <div className="mt-8 flex flex-col gap-4">
               <div className="flex items-start gap-3">
-                <Mail className="h-5 w-5 flex-shrink-0 text-moss-strong mt-0.5" aria-hidden="true" />
+                <Mail className="h-5 w-5 flex-shrink-0 text-success mt-0.5" aria-hidden="true" />
                 <div>
-                  <p className="text-fluid-sm font-medium text-ink">Email</p>
-                  <a href={`mailto:${CONTACT_EMAIL}`} className="text-fluid-sm text-ink-muted hover:text-ink">
+                  <p className="text-sm font-medium text-ink">Email</p>
+                  <a href={`mailto:${CONTACT_EMAIL}`} className="text-sm text-ink-muted hover:text-ink">
                     {CONTACT_EMAIL}
                   </a>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <MapPin className="h-5 w-5 flex-shrink-0 text-moss-strong mt-0.5" aria-hidden="true" />
+                <MapPin className="h-5 w-5 flex-shrink-0 text-success mt-0.5" aria-hidden="true" />
                 <div>
-                  <p className="text-fluid-sm font-medium text-ink">Pilot campus</p>
-                  <p className="text-fluid-sm text-ink-muted">
+                  <p className="text-sm font-medium text-ink">Pilot campus</p>
+                  <p className="text-sm text-ink-muted">
                     MUT Campus, MURANG'A County, Kenya
                   </p>
                 </div>
@@ -87,7 +83,7 @@ export default function Contact() {
 
           <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
             <div>
-              <label htmlFor="contact-name" className="text-fluid-sm font-medium text-ink">
+              <label htmlFor="contact-name" className="text-sm font-medium text-ink">
                 Name
               </label>
               <input
@@ -101,7 +97,7 @@ export default function Contact() {
             </div>
 
             <div>
-              <label htmlFor="contact-email" className="text-fluid-sm font-medium text-ink">
+              <label htmlFor="contact-email" className="text-sm font-medium text-ink">
                 Email
               </label>
               <input
@@ -116,7 +112,7 @@ export default function Contact() {
             </div>
 
             <div>
-              <label htmlFor="contact-message" className="text-fluid-sm font-medium text-ink">
+              <label htmlFor="contact-message" className="text-sm font-medium text-ink">
                 Message
               </label>
               <textarea
@@ -133,7 +129,7 @@ export default function Contact() {
             <Button type="submit" icon={Send} fullWidth>
               Send message
             </Button>
-            <p className="text-fluid-xs text-ink-muted">
+            <p className="text-xs text-ink-muted">
               Opens your email app with this pre-filled, addressed to {CONTACT_EMAIL}.
             </p>
           </form>

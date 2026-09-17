@@ -20,7 +20,7 @@ export function RootLayout() {
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-bg text-ink">
+    <div className="flex min-h-screen flex-col bg-surface text-ink">
       <Navbar onOpenDrawer={() => setDrawerOpen(true)} />
       <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 

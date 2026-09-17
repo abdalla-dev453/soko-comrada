@@ -18,7 +18,7 @@ export function StickyMobileCTA({ show = true, children }) {
           transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
           className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 px-4 pb-3 pt-2 md:hidden"
         >
-          <div className="mx-auto max-w-md rounded-xl bg-surface-raised shadow-popover border border-border p-3">
+          <div className="mx-auto max-w-md rounded-card bg-surface-raised shadow-sticky p-3">
             {children}
           </div>
         </motion.div>

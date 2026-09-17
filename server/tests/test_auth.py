@@ -1,11 +1,17 @@
 from tests.conftest import auth_header, register_user
 
 
-def test_register_rejects_non_student_domain(client):
+def test_register_and_login_with_personal_email(client):
     resp = register_user(client, email="amina@gmail.com")
-    assert resp.status_code == 422
-    assert "email" in resp.get_json()["message"]
+    assert resp.status_code == 201
+    body = resp.get_json()
+    assert body["user"]["email"] == "amina@gmail.com"
 
+    login_resp = client.post(
+        "/api/auth/login",
+        json={"email": "amina@gmail.com", "password": "supersecret123"},
+    )
+    assert login_resp.status_code == 200
 
 def test_register_and_login_flow(client):
     resp = register_user(client)

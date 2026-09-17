@@ -6,17 +6,17 @@ import { pressable } from "../../utils/motion";
 
 const VARIANT_CLASSES = {
   primary:
-    "bg-marigold text-[#4A1B0C] hover:bg-marigold-strong disabled:hover:bg-marigold shadow-card",
+    "bg-gradient-to-r from-accent to-accent-strong text-white hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30",
   secondary:
-    "bg-transparent border border-ink/20 text-[#C9C9C4] hover:border-ink/40 hover:bg-ink/5",
+    "bg-transparent border border-border text-ink hover:border-ink/30 hover:bg-surface-raised",
   ghost: "bg-transparent text-ink hover:bg-ink/5",
-  danger: "bg-marigold text-[#4A1B0C] hover:bg-marigold-strong",
+  danger: "bg-danger text-white hover:bg-danger/90",
 };
 
 const SIZE_CLASSES = {
-  sm: "text-fluid-sm px-3.5 py-1.5 gap-1.5",
-  md: "text-fluid-base px-5 py-2.5 gap-2",
-  lg: "text-fluid-lg px-6 py-3.5 gap-2.5",
+  sm: "text-sm px-3.5 py-1.5 gap-1.5",
+  md: "text-base px-5 py-2.5 gap-2",
+  lg: "text-base px-6 py-3 gap-2.5",
 };
 
 export function Button({
@@ -46,7 +46,7 @@ export function Button({
         disabled={isDisabled}
         aria-busy={loading || undefined}
         className={clsx(
-          "inline-flex items-center justify-center rounded-lg font-medium",
+          "inline-flex items-center justify-center rounded-button font-medium",
           "transition-colors duration-150 focus-visible:outline-offset-2",
           "disabled:opacity-50 disabled:cursor-not-allowed",
           fullWidth && "w-full",

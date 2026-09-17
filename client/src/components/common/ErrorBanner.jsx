@@ -9,10 +9,10 @@ export function ErrorBanner({ title = "That didn't work", message, onDismiss }) 
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: 0 }}
       role="alert"
-      className="flex items-start gap-3 rounded-lg border border-coral/30 bg-coral-soft px-4 py-3 text-ink"
+      className="flex items-start gap-3 rounded-lg bg-danger-soft px-4 py-3 text-ink"
     >
-      <AlertTriangle className="h-5 w-5 flex-shrink-0 text-coral-strong mt-0.5" aria-hidden="true" />
-      <div className="flex-1 text-fluid-sm">
+      <AlertTriangle className="h-5 w-5 flex-shrink-0 text-danger mt-0.5" aria-hidden="true" />
+      <div className="flex-1 text-sm">
         <p className="font-medium">{title}</p>
         <p className="text-ink-muted">{message}</p>
       </div>
@@ -20,7 +20,7 @@ export function ErrorBanner({ title = "That didn't work", message, onDismiss }) 
         <button
           type="button"
           onClick={onDismiss}
-          className="text-ink-muted hover:text-ink text-fluid-sm underline decoration-dotted"
+          className="text-ink-muted hover:text-ink text-sm underline decoration-dotted"
         >
           Dismiss
         </button>
@@ -32,20 +32,19 @@ export function ErrorBanner({ title = "That didn't work", message, onDismiss }) 
 export function FieldError({ message }) {
   if (!message) return null;
   return (
-    <p role="alert" className="mt-1 text-fluid-xs text-coral-strong">
+    <p role="alert" className="mt-1 text-xs text-danger">
       {message}
     </p>
   );
 }
 
-/** Wraps a form field, adding the coral border+ring treatment when
- * `error` is set — used by inputs across the auth/gig-creation forms. */
+/** Wraps a form field, adding a flat danger treatment when `error` is set. */
 export function fieldClasses(hasError) {
   return [
-    "w-full rounded-lg border bg-surface px-3.5 py-2.5 text-fluid-base text-ink placeholder:text-ink-muted",
+    "w-full rounded-button border bg-surface-raised px-3.5 py-2.5 text-base text-ink placeholder:text-ink-muted",
     "transition-colors focus:outline-none focus:ring-2 focus:ring-offset-0",
     hasError
-      ? "border-coral focus:ring-coral/40"
-      : "border-border focus:border-moss focus:ring-moss/30",
+      ? "border-danger focus:ring-danger/20"
+      : "border-border focus:border-accent focus:ring-accent/20",
   ].join(" ");
 }

@@ -12,8 +12,8 @@ const ICONS = {
 
 const ACCENTS = {
   default: "text-ink-muted",
-  success: "text-moss-strong",
-  error: "text-coral-strong",
+  success: "text-success",
+  error: "text-danger",
 };
 
 export function ToastViewport() {
@@ -37,13 +37,13 @@ export function ToastViewport() {
               animate="show"
               exit="exit"
               role="status"
-              className="w-full max-w-sm rounded-xl bg-surface-raised shadow-popover border border-border px-4 py-3 flex items-start gap-3"
+              className="w-full max-w-sm rounded-card bg-surface-raised shadow-modal px-4 py-3 flex items-start gap-3"
             >
               <Icon className={`h-5 w-5 flex-shrink-0 mt-0.5 ${ACCENTS[t.variant]}`} aria-hidden="true" />
               <div className="flex-1 min-w-0">
-                {t.title && <p className="text-fluid-sm font-medium truncate">{t.title}</p>}
+                {t.title && <p className="text-sm font-medium truncate">{t.title}</p>}
                 {t.description && (
-                  <p className="text-fluid-xs text-ink-muted">{t.description}</p>
+                  <p className="text-xs text-ink-muted">{t.description}</p>
                 )}
               </div>
               <button

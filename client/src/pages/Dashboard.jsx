@@ -40,28 +40,27 @@ export default function Dashboard() {
       <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="font-display font-semibold text-fluid-2xl">
+            <h1 className="font-display font-semibold text-2xl">
               Hi, {user?.name?.split(" ")[0]}
             </h1>
-            <p className="mt-1 text-fluid-sm text-ink-muted flex flex-wrap items-center gap-3">
+            <p className="mt-1 text-sm text-ink-muted flex flex-wrap items-center gap-3">
               {user?.campus_location}
               {user?.avg_rating != null && (
                 <span className="inline-flex items-center gap-1">
-                  <Star className="h-3.5 w-3.5 fill-marigold text-marigold" aria-hidden="true" />
+                  <Star className="h-3.5 w-3.5 fill-accent text-accent" aria-hidden="true" />
                   {user.avg_rating.toFixed(1)}
                 </span>
               )}
               {user?.is_verified_entrepreneur && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-marigold-soft px-2 py-0.5 text-fluid-xs font-medium text-marigold-strong">
+                <span className="inline-flex items-center gap-1 rounded-full bg-accent-soft px-2 py-0.5 text-xs font-medium text-accent">
                   <ShieldCheck className="h-3 w-3" aria-hidden="true" />
                   Verified entrepreneur
                 </span>
               )}
             </p>
-            {/* Referral code + credit count */}
             {user?.referral_code && (
-              <div className="mt-3 flex items-center gap-3 rounded-lg border border-border bg-surface px-4 py-2.5 text-fluid-sm w-fit">
-                <Gift className="h-4 w-4 flex-shrink-0 text-moss-strong" aria-hidden="true" />
+              <div className="mt-3 flex items-center gap-3 rounded-lg border border-border bg-surface-raised px-4 py-2.5 text-sm w-fit">
+                <Gift className="h-4 w-4 flex-shrink-0 text-success" aria-hidden="true" />
                 <span className="text-ink-muted">Referral code:</span>
                 <span className="font-mono font-medium text-ink tracking-wider">{user.referral_code}</span>
                 <button
@@ -76,7 +75,7 @@ export default function Dashboard() {
                   <Copy className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>
                 {user.free_boost_credits > 0 && (
-                  <span className="rounded-full bg-marigold-soft px-2 py-0.5 text-fluid-xs font-medium text-marigold-strong">
+                  <span className="rounded-full bg-accent-soft px-2 py-0.5 text-xs font-medium text-accent">
                     {user.free_boost_credits} free boost{user.free_boost_credits > 1 ? "s" : ""}
                   </span>
                 )}
@@ -152,17 +151,17 @@ export default function Dashboard() {
                 {applications.map((app) => (
                   <li
                     key={app.id}
-                    className="flex items-center justify-between gap-4 rounded-lg border border-border bg-surface p-4"
+                    className="flex items-center justify-between gap-4 rounded-lg border border-border bg-surface-raised p-4"
                   >
                     <div>
                       <Link
                         to={`/gigs/${app.gig_id}`}
-                        className="font-medium text-fluid-sm text-ink hover:underline decoration-dotted"
+                        className="font-medium text-sm text-ink hover:underline decoration-dotted"
                       >
                         View gig #{app.gig_id}
                       </Link>
                       {app.proposal_text && (
-                        <p className="mt-1 text-fluid-sm text-ink-muted line-clamp-1">
+                        <p className="mt-1 text-sm text-ink-muted line-clamp-1">
                           {app.proposal_text}
                         </p>
                       )}
@@ -190,10 +189,10 @@ export default function Dashboard() {
                 {payments.map((p) => (
                   <li
                     key={p.id}
-                    className="flex items-center justify-between gap-4 rounded-lg border border-border bg-surface p-4"
+                    className="flex items-center justify-between gap-4 rounded-lg border border-border bg-surface-raised p-4"
                   >
                     <div>
-                      <p className="font-medium text-fluid-sm text-ink">
+                      <p className="font-medium text-sm text-ink">
                         {p.purpose === "BOOST" ? "Gig boost" : p.purpose === "SUBSCRIPTION" ? "Entrepreneur subscription" : p.purpose}
                         {p.gig_id && (
                           <>
@@ -204,7 +203,7 @@ export default function Dashboard() {
                           </>
                         )}
                       </p>
-                      <p className="mt-0.5 text-fluid-xs text-ink-muted">
+                      <p className="mt-0.5 text-xs text-ink-muted">
                         {formatCurrency(p.amount)} · code {p.mpesa_code} ·{" "}
                         {new Date(p.created_at).toLocaleDateString("en-KE", { dateStyle: "medium" })}
                       </p>
@@ -237,8 +236,8 @@ function TabButton({ active, onClick, icon: Icon, children }) {
       type="button"
       onClick={onClick}
       className={clsx(
-        "flex items-center gap-1.5 whitespace-nowrap border-b-2 px-3 py-2.5 text-fluid-sm font-medium transition-colors -mb-px",
-        active ? "border-marigold text-ink" : "border-transparent text-ink-muted hover:text-ink"
+        "flex items-center gap-1.5 whitespace-nowrap border-b-2 px-3 py-2.5 text-sm font-medium transition-colors -mb-px",
+        active ? "border-accent text-ink" : "border-transparent text-ink-muted hover:text-ink"
       )}
     >
       <Icon className="h-4 w-4" aria-hidden="true" />

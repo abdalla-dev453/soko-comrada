@@ -53,8 +53,8 @@ export function Navbar({ onOpenDrawer }) {
       className={clsx(
         "sticky top-0 z-40 transition-[background-color,backdrop-filter,border-color,box-shadow] duration-500",
         scrolled
-          ? "bg-surface/80 backdrop-blur-nav shadow-card border-b border-border"
-          : "bg-transparent border-b border-transparent",
+          ? "bg-surface-raised/95 backdrop-blur-nav shadow-card"
+          : "bg-surface-raised",
       )}
     >
       <motion.nav
@@ -82,7 +82,7 @@ export function Navbar({ onOpenDrawer }) {
             <NavLink
               key={link.to}
               to={link.to}
-              className="group relative rounded-lg px-3.5 py-2 text-fluid-sm font-medium transition-colors"
+              className="group relative rounded-button px-3.5 py-2 text-sm font-medium transition-colors"
             >
               {({ isActive }) => (
                 <motion.span variants={navItem} className="relative block">
@@ -99,7 +99,7 @@ export function Navbar({ onOpenDrawer }) {
                   {isActive && (
                     <motion.span
                       layoutId="navbar-active-link"
-                      className="absolute -inset-x-2 -inset-y-1 -z-0 rounded-md bg-ink/5"
+                      className="absolute -inset-x-2 -inset-y-1 -z-0 rounded-button bg-accent/10"
                       transition={{
                         type: "spring",
                         stiffness: 420,
@@ -107,12 +107,6 @@ export function Navbar({ onOpenDrawer }) {
                       }}
                     />
                   )}
-                  <motion.span
-                    className="absolute inset-x-2 -bottom-1 h-px origin-left bg-marigold"
-                    initial={{ scaleX: 0, opacity: 0 }}
-                    whileHover={{ scaleX: 1, opacity: 1 }}
-                    transition={{ duration: 0.22, ease: "easeOut" }}
-                  />
                 </motion.span>
               )}
             </NavLink>
@@ -145,9 +139,9 @@ export function Navbar({ onOpenDrawer }) {
                 className="block"
               >
                 {theme === "dark" ? (
-                  <Sun className="h-4.5 w-4.5" aria-hidden="true" />
+                  <Sun className="h-5 w-5" aria-hidden="true" />
                 ) : (
-                  <Moon className="h-4.5 w-4.5" aria-hidden="true" />
+                  <Moon className="h-5 w-5" aria-hidden="true" />
                 )}
               </motion.span>
             </AnimatePresence>
@@ -157,7 +151,7 @@ export function Navbar({ onOpenDrawer }) {
             <>
               <Link
                 to="/dashboard"
-                className="px-3.5 py-2 rounded-lg text-fluid-sm font-medium text-ink-muted hover:text-ink hover:bg-ink/5 transition-colors"
+                className="px-3.5 py-2 rounded-button text-sm font-medium text-ink-muted hover:text-ink hover:bg-ink/5 transition-colors"
               >
                 Hi, {user?.name?.split(" ")[0]}
               </Link>
@@ -186,7 +180,7 @@ export function Navbar({ onOpenDrawer }) {
             <>
               <Link
                 to="/login"
-                className="px-3.5 py-2 rounded-lg text-fluid-sm font-medium text-ink-muted hover:text-ink hover:bg-ink/5 transition-colors"
+                className="px-3.5 py-2 rounded-button text-sm font-medium text-ink-muted hover:text-ink hover:bg-ink/5 transition-colors"
               >
                 Log in
               </Link>
@@ -209,7 +203,7 @@ export function Navbar({ onOpenDrawer }) {
           aria-label="Open menu"
           whileHover={{ scale: 1.06 }}
           whileTap={{ scale: 0.92 }}
-          className="md:hidden rounded-lg p-2 text-ink hover:bg-ink/5 transition-colors"
+          className="md:hidden rounded-button p-2 text-ink hover:bg-ink/5 transition-colors"
         >
           <Menu className="h-6 w-6" aria-hidden="true" />
         </motion.button>

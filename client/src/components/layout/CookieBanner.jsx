@@ -32,8 +32,8 @@ export function CookieBanner() {
           aria-label="Cookie notice"
           className="fixed inset-x-0 bottom-16 z-50 px-4 pb-3 md:bottom-4"
         >
-          <div className="mx-auto flex max-w-2xl flex-col gap-3 rounded-xl border border-border bg-surface-raised p-4 shadow-popover sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-fluid-sm text-ink-muted">
+          <div className="mx-auto flex max-w-2xl flex-col gap-3 rounded-card bg-surface-raised shadow-modal p-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-ink-muted">
               We use a small set of cookies to keep you signed in and understand which
               features people actually use. See our{" "}
               <Link to="/privacy" className="text-ink underline decoration-dotted">

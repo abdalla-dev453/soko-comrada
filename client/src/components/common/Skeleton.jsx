@@ -11,7 +11,7 @@ export function Skeleton({ className }) {
 
 export function GigCardSkeleton() {
   return (
-    <div className="ticket bg-surface shadow-card pl-6 pr-4 py-4" style={{ "--spine": "rgb(var(--color-border))" }}>
+    <div className="card p-5">
       <div className="flex items-start justify-between gap-3 mb-3">
         <Skeleton className="h-5 w-2/3" />
         <Skeleton className="h-5 w-14" />

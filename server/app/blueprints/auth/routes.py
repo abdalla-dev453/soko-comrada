@@ -1,5 +1,9 @@
-"""Auth blueprint — registration restricted to student email domains,
-JWT access+refresh issuance, and the authenticated user's own profile.
+"""Auth blueprint — registration, JWT access+refresh issuance, and the
+authenticated user's own profile.
+
+Registration accepts both university and personal email addresses. Email
+verification and the user's university/campus details remain available for
+trust and campus matching.
 
 Extended for Phase 12: email verification, WhatsApp OTP verification,
 campus badge issuance, and privacy toggle management.
@@ -33,7 +37,7 @@ from app.models.verification_token import VerificationToken
 from app.services import growth_service
 from app.services.notification_service import get_notifications_for_user
 from app.utils.decorators import load_current_user
-from app.utils.validators import validate_phone, validate_student_email
+from app.utils.validators import validate_phone
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -71,22 +75,9 @@ def register():
     except ValidationError as err:
         return jsonify({"error": "validation_error", "message": err.messages}), 422
 
-    allowed_domains = current_app.config["ALLOWED_STUDENT_EMAIL_DOMAINS"]
-    if not validate_student_email(data["email"], allowed_domains):
-        return (
-            jsonify(
-                {
-                    "error": "validation_error",
-                    "message": {
-                        "email": [
-                            "Registration requires a recognized student email domain."
-                        ]
-                    },
-                }
-            ),
-            422,
-        )
-
+    # University email is useful for the student badge, but it must not be a
+    # prerequisite for joining: some users only have a personal address.
+    # Marshmallow has already validated the value as a real email address.
     if not validate_phone(data["phone_number"]):
         return (
             jsonify(

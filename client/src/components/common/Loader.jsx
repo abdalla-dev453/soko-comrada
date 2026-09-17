@@ -15,7 +15,7 @@ export function SectionLoader({ label = "Loading" }) {
   return (
     <div className="flex flex-col items-center justify-center gap-3 py-16 text-ink-muted">
       <Loader2 className="h-7 w-7 animate-spin" aria-hidden="true" />
-      <p className="text-fluid-sm">{label}</p>
+      <p className="text-sm">{label}</p>
     </div>
   );
 }

@@ -30,7 +30,7 @@ export default function Notifications() {
       <SEO title="Notifications" description="Recent activity on your gigs and applications." path="/notifications" noindex />
 
       <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
-        <h1 className="font-display font-semibold text-fluid-2xl mb-6">Notifications</h1>
+        <h1 className="font-display font-semibold text-2xl mb-6">Notifications</h1>
 
         {items === null && <SectionLoader label="Loading notifications…" />}
 
@@ -43,15 +43,15 @@ export default function Notifications() {
         )}
 
         {items && items.length > 0 && (
-          <ul className="flex flex-col divide-y divide-border rounded-lg border border-border bg-surface">
+          <ul className="flex flex-col divide-y divide-border">
             {items.map((item, i) => {
               const Icon = ICONS[item.type] || Bell;
               return (
-                <li key={i} className="flex items-start gap-3 p-4">
-                  <Icon className="h-5 w-5 flex-shrink-0 text-moss-strong mt-0.5" aria-hidden="true" />
+                <li key={i} className="flex items-start gap-3 p-4 hover:bg-surface-raised/50">
+                  <Icon className="h-5 w-5 flex-shrink-0 text-success mt-0.5" aria-hidden="true" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-fluid-sm text-ink">{item.message}</p>
-                    <p className="mt-0.5 text-fluid-xs text-ink-muted">
+                    <p className="text-sm text-ink">{item.message}</p>
+                    <p className="mt-0.5 text-xs text-ink-muted">
                       {new Date(item.created_at).toLocaleString("en-KE", {
                         dateStyle: "medium",
                         timeStyle: "short",
@@ -61,7 +61,7 @@ export default function Notifications() {
                   {item.gig_id && (
                     <Link
                       to={`/gigs/${item.gig_id}`}
-                      className="flex-shrink-0 text-fluid-xs text-ink underline decoration-dotted"
+                      className="flex-shrink-0 text-xs text-ink underline decoration-dotted"
                     >
                       View
                     </Link>

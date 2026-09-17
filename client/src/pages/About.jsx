@@ -15,19 +15,20 @@ export default function About() {
         path="/about"
       />
 
-      <section className="mx-auto max-w-3xl px-4 pt-16 pb-12 sm:px-6">
+      <section className="relative isolate mx-auto max-w-3xl overflow-hidden rounded-b-card border-b border-border bg-gradient-to-br from-accent-soft to-surface-raised px-4 pt-16 pb-12 dark:from-accent-soft/20 sm:px-6">
+        <div className="-z-1 absolute top-[-6rem] right-[-6rem] h-80 w-80 rounded-full bg-accent-soft blur-3xl" />
         <motion.div variants={heroContainer} initial="hidden" animate="show">
-          <motion.h1 variants={heroItem} className="font-display font-semibold text-fluid-3xl">
+          <motion.h1 variants={heroItem} className="font-display font-bold text-3xl tracking-tight text-ink">
             Built by people who were tired of the group chat.
           </motion.h1>
-          <motion.p variants={heroItem} className="mt-6 text-fluid-lg text-ink-muted leading-relaxed">
+          <motion.p variants={heroItem} className="mt-6 text-lg text-ink-muted leading-relaxed">
             Every campus already has an informal gig economy — someone who does hair
             braiding out of their room, someone who'll print your assignment at 11pm,
             someone who'll move your boxes for a few hundred bob. It just runs on
             scattered WhatsApp groups, word of mouth, and a fair amount of trust that
             occasionally gets burned.
           </motion.p>
-          <motion.p variants={heroItem} className="mt-4 text-fluid-lg text-ink-muted leading-relaxed">
+          <motion.p variants={heroItem} className="mt-4 text-lg text-ink-muted leading-relaxed">
             ComradePlug doesn't invent that economy — it gives it a real address. One
             place, scoped to your own campus, where a task gets found in minutes instead
             of five group chats, and where a good track record actually follows you.
@@ -35,7 +36,7 @@ export default function About() {
         </motion.div>
       </section>
 
-      <section className="border-y border-border bg-surface">
+      <section className="bg-surface-raised">
         <div className="mx-auto max-w-5xl px-4 py-14 sm:px-6">
           <div className="grid gap-10 sm:grid-cols-3">
             <Principle
@@ -58,7 +59,7 @@ export default function About() {
       </section>
 
       <section className="mx-auto max-w-3xl px-4 py-16 sm:px-6 text-center">
-        <h2 className="font-display font-semibold text-fluid-2xl">
+        <h2 className="font-display font-semibold text-2xl">
           Got a task, or a skill worth listing?
         </h2>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
@@ -76,10 +77,12 @@ export default function About() {
 
 function Principle({ icon: Icon, title, body }) {
   return (
-    <div>
-      <Icon className="h-6 w-6 text-moss-strong" aria-hidden="true" />
-      <h3 className="mt-3 font-display font-semibold text-fluid-lg">{title}</h3>
-      <p className="mt-2 text-fluid-sm text-ink-muted leading-relaxed">{body}</p>
+    <div className="card flex flex-col items-center gap-3 border border-border p-5 shadow-card">
+      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-accent-soft text-accent">
+        <Icon className="h-6 w-6" aria-hidden="true" />
+      </div>
+      <h3 className="font-display font-semibold text-lg">{title}</h3>
+      <p className="text-center text-sm text-ink-muted leading-relaxed">{body}</p>
     </div>
   );
 }

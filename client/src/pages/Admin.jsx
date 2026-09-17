@@ -76,9 +76,9 @@ export default function Admin() {
       <SEO title="Admin" description="Payment verification, reports, and disputes queue." path="/admin" noindex />
 
       <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
-        <h1 className="font-display font-semibold text-fluid-2xl mb-2">Admin</h1>
-        <p className="text-fluid-sm text-ink-muted mb-8">
-          Manual M-Pesa verification, trust &amp; safety reports, and dispute resolution.
+        <h1 className="font-display font-semibold text-2xl mb-2">Admin</h1>
+        <p className="text-sm text-ink-muted mb-8">
+          Manual M-Pesa verification, trust & safety reports, and dispute resolution.
         </p>
 
         <div className="flex gap-1 border-b border-border mb-6 overflow-x-auto scrollbar-none">
@@ -104,10 +104,10 @@ export default function Admin() {
                 {payments.map((p) => (
                   <li
                     key={p.id}
-                    className="flex items-center justify-between gap-4 rounded-lg border border-border bg-surface p-4"
+                    className="flex items-center justify-between gap-4 rounded-lg border border-border bg-surface-raised p-4"
                   >
                     <div>
-                      <p className="font-medium text-fluid-sm text-ink">
+                      <p className="font-medium text-sm text-ink">
                         {p.purpose === "BOOST" ? "Gig boost" : "Entrepreneur subscription"} —{" "}
                         {formatCurrency(p.amount)}
                         {p.gig_id && (
@@ -119,7 +119,7 @@ export default function Admin() {
                           </>
                         )}
                       </p>
-                      <p className="mt-0.5 text-fluid-xs text-ink-muted">
+                      <p className="mt-0.5 text-xs text-ink-muted">
                         code <span className="font-mono">{p.mpesa_code}</span> · submitted{" "}
                         {new Date(p.created_at).toLocaleString("en-KE", { dateStyle: "medium", timeStyle: "short" })}
                       </p>
@@ -155,11 +155,11 @@ export default function Admin() {
                 {reports.map((r) => (
                   <li
                     key={r.id}
-                    className="flex items-start justify-between gap-4 rounded-lg border border-border bg-surface p-4"
+                    className="flex items-start justify-between gap-4 rounded-lg border border-border bg-surface-raised p-4"
                   >
                     <div>
-                      <p className="text-fluid-sm text-ink">{r.reason}</p>
-                      <p className="mt-1 text-fluid-xs text-ink-muted flex flex-wrap gap-x-3">
+                      <p className="text-sm text-ink">{r.reason}</p>
+                      <p className="mt-1 text-xs text-ink-muted flex flex-wrap gap-x-3">
                         {r.reported_gig_id && (
                           <Link to={`/gigs/${r.reported_gig_id}`} className="underline decoration-dotted">
                             gig #{r.reported_gig_id}
@@ -209,18 +209,18 @@ export default function Admin() {
                 {disputes.map((gig) => (
                   <li
                     key={gig.id}
-                    className="flex items-start justify-between gap-4 rounded-lg border border-coral/30 bg-coral-soft/30 p-4"
+                    className="flex items-start justify-between gap-4 rounded-lg border border-border bg-surface-raised p-4"
                   >
                     <div>
-                      <p className="font-medium text-fluid-sm text-ink">{gig.title}</p>
+                      <p className="font-medium text-sm text-ink">{gig.title}</p>
                       <Link
                         to={`/gigs/${gig.id}`}
-                        className="text-fluid-xs text-ink underline decoration-dotted"
+                        className="text-xs text-ink underline decoration-dotted"
                       >
                         View gig #{gig.id}
                       </Link>
                       {gig.dispute_reason && (
-                        <p className="mt-1.5 text-fluid-xs text-ink-muted italic">
+                        <p className="mt-1.5 text-xs text-ink-muted italic">
                           "{gig.dispute_reason}"
                         </p>
                       )}
@@ -254,8 +254,8 @@ function TabButton({ active, onClick, icon: Icon, children }) {
       type="button"
       onClick={onClick}
       className={clsx(
-        "flex items-center gap-1.5 border-b-2 px-3 py-2.5 text-fluid-sm font-medium transition-colors -mb-px",
-        active ? "border-marigold text-ink" : "border-transparent text-ink-muted hover:text-ink"
+        "flex items-center gap-1.5 border-b-2 px-3 py-2.5 text-sm font-medium transition-colors -mb-px",
+        active ? "border-accent text-ink" : "border-transparent text-ink-muted hover:text-ink"
       )}
     >
       <Icon className="h-4 w-4" aria-hidden="true" />

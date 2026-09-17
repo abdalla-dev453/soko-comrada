@@ -71,7 +71,7 @@ export function GigFeed({ initialFilters }) {
           >
             Previous
           </Button>
-          <span className="text-fluid-sm text-ink-muted">
+          <span className="text-sm text-ink-muted">
             Page {page} of {totalPages}
           </span>
           <Button

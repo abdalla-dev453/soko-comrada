@@ -49,7 +49,7 @@ export function MobileDrawer({ open, onClose }) {
             aria-label="Menu"
             className="fixed inset-y-0 right-0 z-50 w-[82vw] max-w-xs bg-surface-raised shadow-popover md:hidden flex flex-col"
           >
-            <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+            <div className="flex items-center justify-between px-5 py-4">
               <Logo />
               <button
                 type="button"
@@ -72,8 +72,8 @@ export function MobileDrawer({ open, onClose }) {
                   onClick={onClose}
                   className={({ isActive }) =>
                     clsx(
-                      "block rounded-lg px-4 py-3 text-fluid-base font-medium transition-colors",
-                      isActive ? "bg-ink/5 text-ink" : "text-ink-muted hover:bg-ink/5 hover:text-ink"
+                      "block rounded-button px-4 py-3 text-base font-medium transition-colors",
+                      isActive ? "bg-accent/10 text-ink" : "text-ink-muted hover:bg-ink/5 hover:text-ink"
                     )
                   }
                 >
@@ -84,7 +84,7 @@ export function MobileDrawer({ open, onClose }) {
               <button
                 type="button"
                 onClick={toggleTheme}
-                className="mt-1 flex w-full items-center gap-3 rounded-lg px-4 py-3 text-fluid-base font-medium text-ink-muted hover:bg-ink/5 hover:text-ink transition-colors"
+                className="mt-1 flex w-full items-center gap-3 rounded-button px-4 py-3 text-base font-medium text-ink-muted hover:bg-ink/5 hover:text-ink transition-colors"
               >
                 {theme === "dark" ? (
                   <Sun className="h-5 w-5" aria-hidden="true" />
@@ -95,7 +95,7 @@ export function MobileDrawer({ open, onClose }) {
               </button>
             </nav>
 
-            <div className="px-5 py-4 border-t border-border flex flex-col gap-2">
+            <div className="px-5 py-4 flex flex-col gap-2">
               {isAuthenticated ? (
                 <Button
                   variant="secondary"
