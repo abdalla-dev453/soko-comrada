@@ -86,8 +86,8 @@ export default function Register() {
       />
       <div className="mx-auto flex max-w-md flex-col justify-center px-4 py-16 sm:px-6">
         <motion.div variants={heroItem} initial="hidden" animate="show">
-          <h1 className="font-display font-semibold text-2xl">Join your campus market</h1>
-          <p className="mt-2 text-sm text-ink-muted">
+          <h1 className="font-display font-semibold text-fluid-2xl">Join your campus market</h1>
+          <p className="mt-2 text-fluid-sm text-ink-muted">
             Registration requires a recognized student email — it's how everyone else on
             the platform knows you're really a student here.
           </p>
@@ -95,10 +95,7 @@ export default function Register() {
           <form onSubmit={handleSubmit} noValidate className="mt-8 flex flex-col gap-4">
             {formError && <ErrorBanner message={formError} onDismiss={() => setFormError("")} />}
 
-            <div>
-              <label htmlFor="name" className="text-sm font-medium text-ink">
-                Full name
-              </label>
+            <Field label="Full name" id="name" error={fieldErrors.name}>
               <input
                 id="name"
                 autoComplete="name"
@@ -106,13 +103,9 @@ export default function Register() {
                 onChange={set("name")}
                 className={fieldClasses(Boolean(fieldErrors.name))}
               />
-              <FieldError message={fieldErrors.name} />
-            </div>
+            </Field>
 
-            <div>
-              <label htmlFor="email" className="text-sm font-medium text-ink">
-                Student email
-              </label>
+            <Field label="Student email" id="email" error={fieldErrors.email}>
               <input
                 id="email"
                 type="email"
@@ -122,13 +115,9 @@ export default function Register() {
                 onChange={set("email")}
                 className={fieldClasses(Boolean(fieldErrors.email))}
               />
-              <FieldError message={fieldErrors.email} />
-            </div>
+            </Field>
 
-            <div>
-              <label htmlFor="password" className="text-sm font-medium text-ink">
-                Password
-              </label>
+            <Field label="Password" id="password" error={fieldErrors.password}>
               <input
                 id="password"
                 type="password"
@@ -137,13 +126,9 @@ export default function Register() {
                 onChange={set("password")}
                 className={fieldClasses(Boolean(fieldErrors.password))}
               />
-              <FieldError message={fieldErrors.password} />
-            </div>
+            </Field>
 
-            <div>
-              <label htmlFor="phone_number" className="text-sm font-medium text-ink">
-                Phone number
-              </label>
+            <Field label="Phone number" id="phone_number" error={fieldErrors.phone_number}>
               <input
                 id="phone_number"
                 type="tel"
@@ -153,14 +138,10 @@ export default function Register() {
                 onChange={set("phone_number")}
                 className={fieldClasses(Boolean(fieldErrors.phone_number))}
               />
-              <FieldError message={fieldErrors.phone_number} />
-            </div>
+            </Field>
 
             <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label htmlFor="university" className="text-sm font-medium text-ink">
-                  University
-                </label>
+              <Field label="University" id="university" error={fieldErrors.university}>
                 <input
                   id="university"
                   placeholder="JKUAT"
@@ -168,12 +149,8 @@ export default function Register() {
                   onChange={set("university")}
                   className={fieldClasses(Boolean(fieldErrors.university))}
                 />
-                <FieldError message={fieldErrors.university} />
-              </div>
-              <div>
-                <label htmlFor="campus_location" className="text-sm font-medium text-ink">
-                  Campus
-                </label>
+              </Field>
+              <Field label="Campus" id="campus_location" error={fieldErrors.campus_location}>
                 <input
                   id="campus_location"
                   placeholder="JKUAT Juja"
@@ -181,8 +158,7 @@ export default function Register() {
                   onChange={set("campus_location")}
                   className={fieldClasses(Boolean(fieldErrors.campus_location))}
                 />
-                <FieldError message={fieldErrors.campus_location} />
-              </div>
+              </Field>
             </div>
 
             <Button type="submit" icon={UserPlus} loading={submitting} fullWidth>
@@ -190,7 +166,7 @@ export default function Register() {
             </Button>
 
             <div>
-              <label htmlFor="referral_code" className="text-sm font-medium text-ink">
+              <label htmlFor="referral_code" className="text-fluid-sm font-medium text-ink">
                 Referral code <span className="text-ink-muted font-normal">(optional)</span>
               </label>
               <input
@@ -200,13 +176,13 @@ export default function Register() {
                 onChange={set("referral_code")}
                 className={`${fieldClasses(false)} mt-1 uppercase tracking-wider`}
               />
-              <p className="mt-1 text-xs text-ink-muted">
+              <p className="mt-1 text-fluid-xs text-ink-muted">
                 Have a code from a classmate? They'll earn a free boost for referring you.
               </p>
             </div>
           </form>
 
-          <p className="mt-6 text-sm text-ink-muted text-center">
+          <p className="mt-6 text-fluid-sm text-ink-muted text-center">
             Already have an account?{" "}
             <Link to="/login" className="text-ink underline decoration-dotted">
               Log in
@@ -215,5 +191,17 @@ export default function Register() {
         </motion.div>
       </div>
     </>
+  );
+}
+
+function Field({ label, id, error, children }) {
+  return (
+    <div>
+      <label htmlFor={id} className="text-fluid-sm font-medium text-ink">
+        {label}
+      </label>
+      <div className="mt-1">{children}</div>
+      <FieldError message={error} />
+    </div>
   );
 }
