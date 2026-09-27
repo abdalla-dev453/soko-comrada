@@ -6,7 +6,7 @@ import { pressable } from "../../utils/motion";
 
 const VARIANT_CLASSES = {
   primary:
-    "bg-gradient-to-r from-accent to-accent-strong text-white hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30",
+    "bg-accent text-ink hover:bg-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30",
   secondary:
     "bg-transparent border border-border text-ink hover:border-ink/30 hover:bg-surface-raised",
   ghost: "bg-transparent text-ink hover:bg-ink/5",

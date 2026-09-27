@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { NavLink, useNavigate } from "react-router-dom";
-import { X, Moon, Sun, LogOut } from "lucide-react";
+import { X, Moon, Sun, LogOut, Bookmark } from "lucide-react";
 import clsx from "clsx";
 
 import { Logo } from "../common/Logo";
@@ -13,6 +13,7 @@ const NAV_LINKS = [
   { to: "/gigs", label: "Browse gigs" },
   { to: "/about", label: "About" },
   { to: "/contact", label: "Contact" },
+  { to: "/saved", label: "Saved", icon: Bookmark, authOnly: true },
   { to: "/dashboard", label: "Dashboard", authOnly: true },
   { to: "/admin", label: "Admin", adminOnly: true },
 ];
@@ -65,21 +66,25 @@ export function MobileDrawer({ open, onClose }) {
               {NAV_LINKS.filter(
                 (link) =>
                   (!link.authOnly || isAuthenticated) && (!link.adminOnly || user?.is_admin)
-              ).map((link) => (
-                <NavLink
-                  key={link.to}
-                  to={link.to}
-                  onClick={onClose}
-                  className={({ isActive }) =>
-                    clsx(
-                      "block rounded-button px-4 py-3 text-base font-medium transition-colors",
-                      isActive ? "bg-accent/10 text-ink" : "text-ink-muted hover:bg-ink/5 hover:text-ink"
-                    )
-                  }
-                >
-                  {link.label}
-                </NavLink>
-              ))}
+              ).map((link) => {
+                const Icon = link.icon;
+                return (
+                  <NavLink
+                    key={link.to}
+                    to={link.to}
+                    onClick={onClose}
+                    className={({ isActive }) =>
+                      clsx(
+                        "block rounded-button px-4 py-3 text-base font-medium transition-colors flex items-center gap-3",
+                        isActive ? "bg-accent/10 text-ink" : "text-ink-muted hover:bg-ink/5 hover:text-ink"
+                      )
+                    }
+                  >
+                    {Icon && <Icon className="h-5 w-5" aria-hidden="true" />}
+                    {link.label}
+                  </NavLink>
+                );
+              })}
 
               <button
                 type="button"

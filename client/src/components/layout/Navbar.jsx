@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
-import { LogOut, Menu, Moon, Sun } from "lucide-react";
+import { Bookmark, LogOut, Menu, Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 
@@ -149,6 +149,13 @@ export function Navbar({ onOpenDrawer }) {
 
           {isAuthenticated ? (
             <>
+              <Link
+                to="/saved"
+                className="px-3.5 py-2 rounded-button text-sm font-medium text-ink-muted hover:text-ink hover:bg-ink/5 transition-colors flex items-center gap-1.5"
+              >
+                <Bookmark className="h-4 w-4" aria-hidden="true" />
+                Saved
+              </Link>
               <Link
                 to="/dashboard"
                 className="px-3.5 py-2 rounded-button text-sm font-medium text-ink-muted hover:text-ink hover:bg-ink/5 transition-colors"
