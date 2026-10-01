@@ -119,7 +119,7 @@ export default function Register() {
       <div className="mx-auto flex max-w-md flex-col justify-center px-4 py-16 sm:px-6">
         <motion.div variants={heroItem} initial="hidden" animate="show">
           <h1 className="font-display font-semibold text-fluid-2xl">Join your campus market</h1>
-          <p className="mt-2 text-fluid-sm text-ink-muted">
+          <p className="mt-2 text-fluid-sm text-text-secondary">
             {form.user_type === "employer"
               ? "Employers must verify their business email and registration. Once verified, you can post opportunities to Kenyan students."
               : 'Registration requires a recognized student email — it\'s how everyone else on the platform knows you\'re really a student here.'}
@@ -132,7 +132,7 @@ export default function Register() {
               className={`flex items-center gap-2 rounded-md px-3 py-2 font-medium transition-all ${
                 form.user_type === "student"
                   ? "bg-brand-500 text-surface shadow-sm"
-                  : "text-ink-muted hover:text-ink"
+                  : "text-text-secondary hover:text-text-primary"
               }}`}
             >
               <GraduationCap size={16} /> Student
@@ -143,7 +143,7 @@ export default function Register() {
               className={`flex items-center gap-2 rounded-md px-3 py-2 font-medium transition-all ${
                 form.user_type === "employer"
                   ? "bg-brand-500 text-surface shadow-sm"
-                  : "text-ink-muted hover:text-ink"
+                  : "text-text-secondary hover:text-text-primary"
               }}`}
             >
               <Shield size={16} /> Employer
@@ -303,8 +303,8 @@ export default function Register() {
             )}
 
             <div>
-              <label htmlFor="referral_code" className="text-fluid-sm font-medium text-ink">
-                Referral code <span className="text-ink-muted font-normal">(optional)</span>
+              <label htmlFor="referral_code" className="text-fluid-sm font-medium text-text-primary">
+                Referral code <span className="text-text-secondary font-normal">(optional)</span>
               </label>
               <input
                 id="referral_code"
@@ -313,15 +313,15 @@ export default function Register() {
                 onChange={set("referral_code")}
                 className={`${fieldClasses(false)} mt-1 uppercase tracking-wider`}
               />
-              <p className="mt-1 text-fluid-xs text-ink-muted">
+              <p className="mt-1 text-fluid-xs text-text-secondary">
                 Have a code from a classmate? They'll earn a free boost for referring you.
               </p>
             </div>
           </form>
 
-          <p className="mt-6 text-fluid-sm text-ink-muted text-center">
+          <p className="mt-6 text-fluid-sm text-text-secondary text-center">
             Already have an account?{" "}
-            <Link to="/login" className="text-ink underline decoration-dotted">
+            <Link to="/login" className="text-text-primary underline decoration-dotted">
               Log in
             </Link>
           </p>
@@ -334,9 +334,7 @@ export default function Register() {
 function Field({ label, id, error, children }) {
   return (
     <div>
-      <label htmlFor={id} className="text-fluid-sm font-medium text-ink">
-        {label}
-      </label>
+      <label htmlFor={id} className="text-fluid-sm font-medium text-text-primary">{label}</label>
       <div className="mt-1">{children}</div>
       <FieldError message={error} />
     </div>

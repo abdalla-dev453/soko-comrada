@@ -53,22 +53,22 @@ export default function Login() {
     <>
       <SEO
         title="Log in"
-        description="Log in to Comrade Plug to post gigs, apply for work, and manage your campus hustles."
+        description="Log in to CampusGig Kenya to post opportunities, apply for work, and manage your campus hustles."
         path="/login"
       />
       <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-4 py-16 sm:px-6">
         <motion.div variants={heroItem} initial="hidden" animate="show">
           <h1 className="font-display font-semibold text-fluid-2xl">Welcome back</h1>
-          <p className="mt-2 text-fluid-sm text-ink-muted">
-            Log in with the student email you registered with.
+          <p className="mt-2 text-fluid-sm text-text-secondary">
+            Log in with the email you registered with.
           </p>
 
           <form onSubmit={handleSubmit} noValidate className="mt-8 flex flex-col gap-4">
             {formError && <ErrorBanner message={formError} onDismiss={() => setFormError("")} />}
 
             <div>
-              <label htmlFor="email" className="text-fluid-sm font-medium text-ink">
-                Student email
+              <label htmlFor="email" className="text-fluid-sm font-medium text-text-primary">
+                Email
               </label>
               <input
                 id="email"
@@ -83,7 +83,7 @@ export default function Login() {
             </div>
 
             <div>
-              <label htmlFor="password" className="text-fluid-sm font-medium text-ink">
+              <label htmlFor="password" className="text-fluid-sm font-medium text-text-primary">
                 Password
               </label>
               <input
@@ -103,9 +103,9 @@ export default function Login() {
             </Button>
           </form>
 
-          <p className="mt-6 text-fluid-sm text-ink-muted text-center">
-            New to Soko Comrada?{" "}
-            <Link to="/register" className="text-ink underline decoration-dotted">
+          <p className="mt-6 text-fluid-sm text-text-secondary text-center">
+            New to CampusGig Kenya?{" "}
+            <Link to="/register" className="text-text-primary underline decoration-dotted">
               Create an account
             </Link>
           </p>
