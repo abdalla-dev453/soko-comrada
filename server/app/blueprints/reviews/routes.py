@@ -1,15 +1,15 @@
-"""Reviews blueprint — post-completion two-way star rating + text
-review (PRD §5.3), and keeping User.avg_rating in sync so the feed
-and profile can show it without recomputing on every read.
+"""Reviews blueprint — post-completion two-way star rating + text review,
+and keeping User.avg_rating in sync so the feed and profile can show it
+without recomputing on every read.
 """
 
 from flask import Blueprint, jsonify, request
-from marshmallow import Schema, ValidationError, fields, validate
+from marshmallow import Schema, ValidationError, fields, validate, EXCLUDE
 from sqlalchemy import func
 
 from app.extensions import db, limiter
 from app.models.application import Application, ApplicationStatus
-from app.models.gig import Gig, GigStatus
+from app.models.opportunity import Gig, GigStatus
 from app.models.review import Review
 from app.models.user import User
 from app.utils.decorators import load_current_user
@@ -18,7 +18,11 @@ reviews_bp = Blueprint("reviews", __name__)
 
 
 class ReviewCreateSchema(Schema):
-    gig_id = fields.Int(required=True)
+    class Meta:
+        unknown = EXCLUDE
+
+    opportunity_id = fields.Int(required=False, allow_none=True)
+    gig_id = fields.Int(required=False, allow_none=True)  # legacy alias
     reviewee_id = fields.Int(required=True)
     rating = fields.Int(required=True, validate=validate.Range(min=1, max=5))
     comment = fields.Str(required=False, allow_none=True, validate=validate.Length(max=2000))
@@ -46,37 +50,42 @@ def create_review(current_user):
     except ValidationError as err:
         return jsonify({"error": "validation_error", "message": err.messages}), 422
 
-    gig = db.session.get(Gig, data["gig_id"])
+    # Support both opportunity_id and legacy gig_id
+    opp_id = data.get("opportunity_id") or data.get("gig_id")
+    if opp_id is None:
+        return jsonify({"error": "validation_error", "message": {"opportunity_id": ["Missing data for required field."]}}), 422
+
+    gig = db.session.get(Gig, opp_id)
     if gig is None:
-        return jsonify({"error": "not_found", "message": "Gig not found."}), 404
+        return jsonify({"error": "not_found", "message": "Opportunity not found."}), 404
 
     if gig.status != GigStatus.COMPLETED:
-        return jsonify({"error": "conflict", "message": "You can only review a completed gig."}), 409
+        return jsonify({"error": "conflict", "message": "You can only review a completed opportunity."}), 409
 
     accepted_application = Application.query.filter_by(
-        gig_id=gig.id, status=ApplicationStatus.ACCEPTED
+        opportunity_id=gig.id, status=ApplicationStatus.ACCEPTED
     ).first()
     counterparty_id = (
         accepted_application.applicant_id if accepted_application else None
     )
 
-    participant_ids = {gig.poster_id, counterparty_id} - {None}
+    participant_ids = {gig.employer_id, counterparty_id} - {None}
     if current_user.id not in participant_ids:
-        return jsonify({"error": "forbidden", "message": "Only gig participants can leave a review."}), 403
+        return jsonify({"error": "forbidden", "message": "Only opportunity participants can leave a review."}), 403
 
     if data["reviewee_id"] not in participant_ids or data["reviewee_id"] == current_user.id:
-        return jsonify({"error": "validation_error", "message": {"reviewee_id": ["Invalid reviewee for this gig."]}}), 422
+        return jsonify({"error": "validation_error", "message": {"reviewee_id": ["Invalid reviewee for this opportunity."]}}), 422
 
     reviewee = db.session.get(User, data["reviewee_id"])
     if reviewee is None:
         return jsonify({"error": "not_found", "message": "Reviewee not found."}), 404
 
-    existing = Review.query.filter_by(gig_id=gig.id, reviewer_id=current_user.id).first()
+    existing = Review.query.filter_by(opportunity_id=gig.id, reviewer_id=current_user.id).first()
     if existing is not None:
-        return jsonify({"error": "conflict", "message": "You already reviewed this gig."}), 409
+        return jsonify({"error": "conflict", "message": "You already reviewed this opportunity."}), 409
 
     review = Review(
-        gig_id=gig.id,
+        opportunity_id=gig.id,
         reviewer_id=current_user.id,
         reviewee_id=reviewee.id,
         rating=data["rating"],
