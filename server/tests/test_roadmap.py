@@ -205,7 +205,7 @@ def test_admin_can_clear_moderation_flag(client, db, app):
     # Find the auto-generated report
     with app.app_context():
         from app.models.report import Report
-        report = Report.query.filter_by(reported_gig_id=gig_id, auto_generated=True).first()
+        report = Report.query.filter_by(reported_opportunity_id=gig_id, auto_generated=True).first()
         report_id = report.id
         user = User.query.filter_by(email="poster3@jkuat.ac.ke").first()
         user.is_admin = True

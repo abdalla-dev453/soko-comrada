@@ -75,11 +75,16 @@ class BaseConfig:
     BOOST_FEE_KES = float(os.environ.get("BOOST_FEE_KES", "50"))
     SUBSCRIPTION_FEE_KES = float(os.environ.get("SUBSCRIPTION_FEE_KES", "200"))
 
+    # CampusGig Kenya marketplace fees
+    LISTING_FEE_KES = float(os.environ.get("LISTING_FEE_KES", "500"))
+    FEATURED_LISTING_FEE_KES = float(os.environ.get("FEATURED_LISTING_FEE_KES", "300"))
+    EMPLOYER_SUBSCRIPTION_FEE_KES = float(os.environ.get("EMPLOYER_SUBSCRIPTION_FEE_KES", "2000"))
+
     SMTP_HOST = os.environ.get("SMTP_HOST", "")
     SMTP_PORT = int(os.environ.get("SMTP_PORT", "587"))
     SMTP_USERNAME = os.environ.get("SMTP_USERNAME", "")
     SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD", "")
-    SMTP_FROM_ADDRESS = os.environ.get("SMTP_FROM_ADDRESS", "notifications@sokocomrada.app")
+    SMTP_FROM_ADDRESS = os.environ.get("SMTP_FROM_ADDRESS", "notifications@campusgig.co.ke")
     SMTP_USE_TLS = os.environ.get("SMTP_USE_TLS", "true").lower() == "true"
 
     # --- Phase 5: Daraja STK Push ---

@@ -1,11 +1,10 @@
 """
-Application factory for Comrade Plug.
+Application factory for CampusGig Kenya.
 
-Blueprints are registered here; each domain module (auth, gigs,
+Blueprints are registered here; each domain module (auth, opportunities,
 applications, payments, reviews, admin) owns its own routes and
 request-validation schemas, and is wired in one place so a new
-feature costs one import + one registration line, not an edit to
-every file in the project.
+feature costs one import + one registration line.
 """
 
 import os
@@ -42,7 +41,7 @@ def create_app(env_name: str | None = None) -> Flask:
 
     # --- Blueprints ---
     from app.blueprints.auth.routes import auth_bp
-    from app.blueprints.gigs.routes import gigs_bp
+    from app.blueprints.opportunities.routes import opportunities_bp
     from app.blueprints.applications.routes import applications_bp
     from app.blueprints.payments.routes import payments_bp
     from app.blueprints.reviews.routes import reviews_bp
@@ -51,7 +50,9 @@ def create_app(env_name: str | None = None) -> Flask:
     from app.blueprints.portfolio.routes import portfolio_bp
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
-    app.register_blueprint(gigs_bp, url_prefix="/api/gigs")
+    # Register at both /api/opportunities (new PRD standard) and /api/gigs (legacy)
+    app.register_blueprint(opportunities_bp, url_prefix="/api/opportunities")
+    app.register_blueprint(opportunities_bp, url_prefix="/api/gigs", name="gigs")
     app.register_blueprint(applications_bp, url_prefix="/api/applications")
     app.register_blueprint(payments_bp, url_prefix="/api/payments")
     app.register_blueprint(reviews_bp, url_prefix="/api/reviews")
@@ -80,8 +81,8 @@ def create_app(env_name: str | None = None) -> Flask:
             db.session.execute(text("SELECT 1"))
         except SQLAlchemyError:
             app.logger.exception("Health check database connection failed")
-            return jsonify({"status": "unavailable", "service": "soko-comrada-api"}), 503
-        return jsonify({"status": "ok", "service": "soko-comrada-api"}), 200
+            return jsonify({"status": "unavailable", "service": "campusgig-kenya-api"}), 503
+        return jsonify({"status": "ok", "service": "campusgig-kenya-api"}), 200
 
     return app
 
