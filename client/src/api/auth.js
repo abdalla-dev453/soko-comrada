@@ -1,9 +1,19 @@
 import { apiClient, storeTokens } from "./client";
 
-export async function register(payload) {
-  const data = await apiClient.post("/auth/register", payload, { skipAuth: true });
+export async function registerStudent(payload) {
+  const data = await apiClient.post("/auth/register/student", payload, { skipAuth: true });
   storeTokens({ access_token: data.access_token, refresh_token: data.refresh_token });
   return data.user;
+}
+
+export async function registerEmployer(payload) {
+  const data = await apiClient.post("/auth/register/employer", payload, { skipAuth: true });
+  storeTokens({ access_token: data.access_token, refresh_token: data.refresh_token });
+  return data.user;
+}
+
+export async function register(payload) {
+  return registerStudent(payload);
 }
 
 export async function login(email, password) {
