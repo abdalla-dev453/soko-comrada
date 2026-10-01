@@ -1,4 +1,4 @@
-"""Report model — flagging a gig or user for spam/scam/abuse (PRD §5.3)."""
+"""Report model — flagging an opportunity or user for spam/scam/abuse."""
 
 import enum
 from datetime import datetime, timezone
@@ -19,8 +19,8 @@ class Report(db.Model):
     reporter_id = db.Column(
         db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
-    reported_gig_id = db.Column(
-        db.Integer, db.ForeignKey("gigs.id", ondelete="SET NULL"), nullable=True
+    reported_opportunity_id = db.Column(
+        db.Integer, db.ForeignKey("opportunities.id", ondelete="SET NULL"), nullable=True
     )
     reported_user_id = db.Column(
         db.Integer, db.ForeignKey("users.id", ondelete="SET NULL"), nullable=True
@@ -30,7 +30,7 @@ class Report(db.Model):
         db.Enum(ReportStatus), default=ReportStatus.OPEN, nullable=False, index=True
     )
     # Distinguishes a rules-engine moderation item from a report filed by a
-    # user; only the former may automatically alter a gig on resolution.
+    # user; only the former may automatically alter an opportunity on resolution.
     auto_generated = db.Column(db.Boolean, default=False, nullable=False)
     created_at = db.Column(
         db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
@@ -39,8 +39,8 @@ class Report(db.Model):
     reporter = db.relationship(
         "User", back_populates="reports_filed", foreign_keys=[reporter_id]
     )
-    reported_gig = db.relationship(
-        "Gig", back_populates="reports", foreign_keys=[reported_gig_id]
+    reported_opportunity = db.relationship(
+        "Opportunity", back_populates="reports", foreign_keys=[reported_opportunity_id]
     )
     reported_user = db.relationship("User", foreign_keys=[reported_user_id])
 
@@ -48,7 +48,7 @@ class Report(db.Model):
         return {
             "id": self.id,
             "reporter_id": self.reporter_id,
-            "reported_gig_id": self.reported_gig_id,
+            "reported_opportunity_id": self.reported_opportunity_id,
             "reported_user_id": self.reported_user_id,
             "reason": self.reason,
             "status": self.status.value,

@@ -1,4 +1,4 @@
-"""Portfolio image model — service providers upload proof-of-work images."""
+"""Portfolio image model — students upload proof-of-work images."""
 
 from datetime import datetime, timezone
 
@@ -14,22 +14,23 @@ class PortfolioImage(db.Model):
     )
     image_url = db.Column(db.String(500), nullable=False)
     caption = db.Column(db.String(200), nullable=True)
-    gig_id = db.Column(
-        db.Integer, db.ForeignKey("gigs.id", ondelete="SET NULL"), nullable=True
+    opportunity_id = db.Column(
+        db.Integer, db.ForeignKey("opportunities.id", ondelete="SET NULL"), nullable=True
     )
     created_at = db.Column(
         db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
     )
 
     owner = db.relationship("User", back_populates="portfolio_images")
-    gig = db.relationship("Gig")
+    opportunity = db.relationship("Opportunity")
 
     def to_dict(self) -> dict:
         return {
             "id": self.id,
+            "owner_id": self.owner_id,
             "image_url": self.image_url,
             "caption": self.caption,
-            "gig_id": self.gig_id,
+            "opportunity_id": self.opportunity_id,
             "created_at": self.created_at.isoformat(),
         }
 

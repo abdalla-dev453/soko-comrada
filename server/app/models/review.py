@@ -9,8 +9,8 @@ class Review(db.Model):
     __tablename__ = "reviews"
 
     id = db.Column(db.Integer, primary_key=True)
-    gig_id = db.Column(
-        db.Integer, db.ForeignKey("gigs.id", ondelete="CASCADE"), nullable=False
+    opportunity_id = db.Column(
+        db.Integer, db.ForeignKey("opportunities.id", ondelete="CASCADE"), nullable=False
     )
     reviewer_id = db.Column(
         db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
@@ -24,19 +24,19 @@ class Review(db.Model):
         db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
     )
 
-    gig = db.relationship("Gig", back_populates="reviews")
+    opportunity = db.relationship("Opportunity", back_populates="reviews")
     reviewer = db.relationship("User", foreign_keys=[reviewer_id])
     reviewee = db.relationship("User", foreign_keys=[reviewee_id])
 
     __table_args__ = (
         db.CheckConstraint("rating BETWEEN 1 AND 5", name="ck_review_rating_range"),
-        db.UniqueConstraint("gig_id", "reviewer_id", name="uq_gig_reviewer"),
+        db.UniqueConstraint("opportunity_id", "reviewer_id", name="uq_opportunity_reviewer"),
     )
 
     def to_dict(self) -> dict:
         return {
             "id": self.id,
-            "gig_id": self.gig_id,
+            "opportunity_id": self.opportunity_id,
             "reviewer_id": self.reviewer_id,
             "reviewee_id": self.reviewee_id,
             "rating": self.rating,
@@ -45,4 +45,4 @@ class Review(db.Model):
         }
 
     def __repr__(self) -> str:
-        return f"<Review id={self.id} gig_id={self.gig_id} rating={self.rating}>"
+        return f"<Review id={self.id} opportunity_id={self.opportunity_id} rating={self.rating}>"

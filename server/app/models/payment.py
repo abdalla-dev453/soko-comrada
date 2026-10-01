@@ -1,13 +1,9 @@
-"""Payment model — M-Pesa payment records for boosts, subscriptions,
-referral credits, and (future) escrow.
+"""Payment model — M-Pesa payment records for opportunity applications, employer listing fees,
+subscriptions, referral credits, and escrow.
 
-Two verification paths now coexist (Phase 5 roadmap item):
-  - MANUAL: student submits an M-Pesa confirmation code, an admin
-    cross-checks it against the till statement (original MVP flow).
-  - STK: Daraja STK Push initiated from the app; Safaricom's callback
-    verifies the payment automatically. checkout_request_id is the
-    correlation id Daraja returns from the initiate call and echoes
-    back in the callback.
+Verification paths:
+- MANUAL: user submits an M-Pesa confirmation code, an admin cross-checks it
+- STK_PUSH: Daraja STK Push initiated from the app; Safaricom's callback verifies automatically
 """
 
 import enum
@@ -17,22 +13,27 @@ from app.extensions import db
 
 
 class PaymentPurpose(str, enum.Enum):
-    BOOST = "BOOST"
-    SUBSCRIPTION = "SUBSCRIPTION"
+    OPPORTUNITY_APPLICATION = "OPPORTUNITY_APPLICATION"
+    EMPLOYER_LISTING_FEE = "EMPLOYER_LISTING_FEE"
+    EMPLOYER_SUBSCRIPTION = "EMPLOYER_SUBSCRIPTION"
+    SUBSCRIPTION = "SUBSCRIPTION"  # Legacy alias value
     ESCROW = "ESCROW"
-    REFERRAL_CREDIT = "REFERRAL_CREDIT"  # Phase 10 — informational ledger entry
+    REFERRAL_CREDIT = "REFERRAL_CREDIT"
+    FEATURED_LISTING = "FEATURED_LISTING"
+    BOOST = "BOOST"
 
 
 class PaymentStatus(str, enum.Enum):
     PENDING = "PENDING"
     VERIFIED = "VERIFIED"
     REJECTED = "REJECTED"
+    REFUNDED = "REFUNDED"
 
 
 class PaymentMethod(str, enum.Enum):
     MANUAL = "MANUAL"
     STK_PUSH = "STK_PUSH"
-    CREDIT = "CREDIT"  # Phase 10 — redeemed free-boost credit, no M-Pesa involved
+    CREDIT = "CREDIT"  # Redeemed credit, no M-Pesa involved
 
 
 class Payment(db.Model):
@@ -42,15 +43,14 @@ class Payment(db.Model):
     user_id = db.Column(
         db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
-    gig_id = db.Column(
-        db.Integer, db.ForeignKey("gigs.id", ondelete="SET NULL"), nullable=True
+    opportunity_id = db.Column(
+        db.Integer, db.ForeignKey("opportunities.id", ondelete="SET NULL"), nullable=True
     )
-    # Nullable now: an STK Push payment has no code until the Daraja
-    # callback lands, and a redeemed credit never has one at all.
+    # Nullable: STK Push has no code until callback, credit never has one
     mpesa_code = db.Column(db.String(15), unique=True, nullable=True, index=True)
     amount = db.Column(db.Numeric(10, 2), nullable=False)
     purpose = db.Column(
-        db.Enum(PaymentPurpose), default=PaymentPurpose.BOOST, nullable=False
+        db.Enum(PaymentPurpose), default=PaymentPurpose.EMPLOYER_LISTING_FEE, nullable=False
     )
     status = db.Column(
         db.Enum(PaymentStatus), default=PaymentStatus.PENDING, nullable=False, index=True
@@ -59,24 +59,28 @@ class Payment(db.Model):
         db.Enum(PaymentMethod), default=PaymentMethod.MANUAL, nullable=False
     )
 
-    # Daraja STK Push correlation fields (Phase 5).
+    # Daraja STK Push correlation fields
     checkout_request_id = db.Column(db.String(64), unique=True, nullable=True, index=True)
     merchant_request_id = db.Column(db.String(64), nullable=True)
     phone_number = db.Column(db.String(15), nullable=True)
+
+    # Refund tracking
+    refunded_at = db.Column(db.DateTime, nullable=True)
+    refund_reason = db.Column(db.Text, nullable=True)
 
     created_at = db.Column(
         db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
     )
 
     user = db.relationship("User", back_populates="payments")
-    gig = db.relationship("Gig", back_populates="payments")
+    opportunity = db.relationship("Opportunity", back_populates="payments")
 
     def to_dict(self) -> dict:
         """Owner-safe payment representation; never disclose a full receipt."""
         return {
             "id": self.id,
             "user_id": self.user_id,
-            "gig_id": self.gig_id,
+            "opportunity_id": self.opportunity_id,
             "mpesa_code": self._masked_mpesa_code(),
             "amount": float(self.amount),
             "purpose": self.purpose.value,
@@ -98,4 +102,4 @@ class Payment(db.Model):
         return data
 
     def __repr__(self) -> str:
-        return f"<Payment id={self.id} method={self.method.value} status={self.status.value}>"
+        return f"<Payment id={self.id} purpose={self.purpose.value} status={self.status.value}>"
