@@ -20,7 +20,7 @@ from app.blueprints.gigs.schemas import (
 )
 from app.extensions import db, limiter
 from app.models.application import Application, ApplicationStatus
-from app.models.gig import Gig, GigStatus, GigType, PriceType
+from app.models.opportunity import Gig, GigStatus, GigType, PriceType
 from app.models.report import Report
 from app.services.dispute_service import (
     DisputeError,

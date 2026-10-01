@@ -1,7 +1,7 @@
 """Marshmallow request-validation schemas for the gigs blueprint."""
 
 from marshmallow import Schema, fields, validate
-from app.models.gig import GigType, PriceType
+from app.models.opportunity import GigType, PriceType
 
 
 class GigCreateSchema(Schema):
