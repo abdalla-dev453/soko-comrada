@@ -4,39 +4,31 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Strict 60-30-10 editorial rule.
-        // 60% = neutral slate / white backgrounds
-        // 30% = dark slate text and surfaces
-        // 10% = crisp indigo accent
-        ink: "rgb(var(--color-ink) / <alpha-value>)",
-        "ink-muted": "rgb(var(--color-ink-muted) / <alpha-value>)",
-        "ink-faint": "rgb(var(--color-ink-faint) / <alpha-value>)",
-        surface: "rgb(var(--color-surface) / <alpha-value>)",
-        "surface-raised": "rgb(var(--color-surface-raised) / <alpha-value>)",
-        border: "rgb(var(--color-border) / <alpha-value>)",
-        accent: {
-          DEFAULT: "rgb(var(--color-accent) / <alpha-value>)",
-          strong: "rgb(var(--color-accent-strong) / <alpha-value>)",
-          soft: "rgb(var(--color-accent-soft) / <alpha-value>)",
-          muted: "rgb(var(--color-accent-muted) / <alpha-value>)",
-        },
-        // Semantic colors are kept minimal and flat — never neon, never multi-stop.
-        success: {
-          DEFAULT: "rgb(var(--color-success) / <alpha-value>)",
-          soft: "rgb(var(--color-success-soft) / <alpha-value>)",
-        },
-        danger: {
-          DEFAULT: "rgb(var(--color-danger) / <alpha-value>)",
-          soft: "rgb(var(--color-danger-soft) / <alpha-value>)",
-        },
-        warning: {
-          DEFAULT: "rgb(var(--color-warning) / <alpha-value>)",
-          soft: "rgb(var(--color-warning-soft) / <alpha-value>)",
-        },
+        // CampusGig Kenya design system
+        "brand-900": "rgb(var(--brand-900) / <alpha-value>)",
+        "brand-700": "rgb(var(--brand-700) / <alpha-value>)",
+        "brand-500": "rgb(var(--brand-500) / <alpha-value>)",
+        
+        "success-100": "rgb(var(--success-100) / <alpha-value>)",
+        "success-500": "rgb(var(--success-500) / <alpha-value>)",
+        "success-700": "rgb(var(--success-700) / <alpha-value>)",
+        
+        "warning-100": "rgb(var(--warning-100) / <alpha-value>)",
+        "warning-500": "rgb(var(--warning-500) / <alpha-value>)",
+        "warning-700": "rgb(var(--warning-700) / <alpha-value>)",
+        
+        "danger-100": "rgb(var(--danger-100) / <alpha-value>)",
+        "danger-500": "rgb(var(--danger-500) / <alpha-value>)",
+        "danger-700": "rgb(var(--danger-700) / <alpha-value>)",
+        
+        surface: "rgb(var(--surface) / <alpha-value>)",
+        canvas: "rgb(var(--canvas) / <alpha-value>)",
+        "text-primary": "rgb(var(--text-primary) / <alpha-value>)",
+        "text-secondary": "rgb(var(--text-secondary) / <alpha-value>)",
+        border: "rgb(var(--border) / <alpha-value>)",
       },
       fontFamily: {
-        display: ["Fraunces", "serif"],
-        sans: ["Source Sans 3", "system-ui", "sans-serif"],
+        sans: ["Inter", "system-ui", "sans-serif"],
       },
       fontSize: {
         xs: ["0.75rem", { lineHeight: "1.25" }],
@@ -46,10 +38,8 @@ export default {
         xl: ["1.5rem", { lineHeight: "1.35" }],
         "2xl": ["2rem", { lineHeight: "1.3" }],
         "3xl": ["2.5rem", { lineHeight: "1.25" }],
-        "4xl": ["3rem", { lineHeight: "1.2" }],
       },
       spacing: {
-        // 8px base grid — no arbitrary gaps
         4.5: "1.125rem",
         5.5: "1.375rem",
         6.5: "1.625rem",
@@ -61,23 +51,14 @@ export default {
         button: "0.5rem",
       },
       boxShadow: {
-        card: "0 1px 2px rgba(15, 23, 42, 0.06), 0 4px 16px rgba(15, 23, 42, 0.05)",
-        "card-hover": "0 4px 12px rgba(15, 23, 42, 0.10), 0 16px 40px rgba(15, 23, 42, 0.08)",
-        modal: "0 20px 40px rgba(15, 23, 42, 0.18)",
-        popover: "0 4px 12px rgba(15, 23, 42, 0.08), 0 24px 48px -16px rgba(15, 23, 42, 0.20)",
-        sticky: "0 -4px 16px rgba(15, 23, 42, 0.08)",
+        card: "0 1px 2px rgba(11, 31, 58, 0.06), 0 4px 16px rgba(11, 31, 58, 0.05)",
+        "card-hover": "0 4px 12px rgba(11, 31, 58, 0.10), 0 16px 40px rgba(11, 31, 58, 0.08)",
+        modal: "0 20px 40px rgba(11, 31, 58, 0.18)",
+        popover: "0 4px 12px rgba(11, 31, 58, 0.08), 0 24px 48px -16px rgba(11, 31, 58, 0.20)",
+        sticky: "0 -4px 16px rgba(11, 31, 58, 0.08)",
       },
       backdropBlur: {
         nav: "14px",
-      },
-      keyframes: {
-        "soft-pulse": {
-          "0%, 100%": { opacity: "0.4" },
-          "50%": { opacity: "1" },
-        },
-      },
-      animation: {
-        "soft-pulse": "soft-pulse 2s ease-in-out infinite",
       },
     },
   },
