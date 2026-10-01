@@ -6,11 +6,15 @@ import { pressable } from "../../utils/motion";
 
 const VARIANT_CLASSES = {
   primary:
-    "bg-accent text-ink hover:bg-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30",
+    "bg-brand-700 text-white hover:bg-brand-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30",
   secondary:
-    "bg-transparent border border-border text-ink hover:border-ink/30 hover:bg-surface-raised",
-  ghost: "bg-transparent text-ink hover:bg-ink/5",
-  danger: "bg-danger text-white hover:bg-danger/90",
+    "bg-transparent border border-border text-text-primary hover:bg-canvas focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30",
+  ghost: "bg-transparent text-text-primary hover:bg-canvas focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30",
+  danger: "bg-danger-700 text-white hover:bg-danger-700/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-danger-500/30",
+  success:
+    "bg-success-700 text-white hover:bg-success-700/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success-500/30",
+  warning:
+    "bg-warning-700 text-white hover:bg-warning-700/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warning-500/30",
 };
 
 const SIZE_CLASSES = {

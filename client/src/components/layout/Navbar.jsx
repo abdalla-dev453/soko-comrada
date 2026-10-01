@@ -11,7 +11,7 @@ import { Button } from "../common/Button";
 import { Logo } from "../common/Logo";
 
 const NAV_LINKS = [
-  { to: "/gigs", label: "Browse gigs" },
+  { to: "/", label: "Explore" },
   { to: "/about", label: "About" },
   { to: "/contact", label: "Contact" },
 ];
@@ -53,8 +53,8 @@ export function Navbar({ onOpenDrawer }) {
       className={clsx(
         "sticky top-0 z-40 transition-[background-color,backdrop-filter,border-color,box-shadow] duration-500",
         scrolled
-          ? "bg-surface-raised/95 backdrop-blur-nav shadow-card"
-          : "bg-surface-raised",
+          ? "bg-surface/95 backdrop-blur-sm shadow-card"
+          : "bg-surface",
       )}
     >
       <motion.nav
@@ -69,7 +69,7 @@ export function Navbar({ onOpenDrawer }) {
           whileHover={{ y: -1 }}
           whileTap={{ scale: 0.98 }}
         >
-          <Link to="/" className="rounded-md" aria-label="Soko Comrada home">
+          <Link to="/" className="rounded-md" aria-label="CampusGig Kenya home">
             <Logo />
           </Link>
         </motion.div>
@@ -82,6 +82,7 @@ export function Navbar({ onOpenDrawer }) {
             <NavLink
               key={link.to}
               to={link.to}
+              end={link.to === "/"}
               className="group relative rounded-button px-3.5 py-2 text-sm font-medium transition-colors"
             >
               {({ isActive }) => (
@@ -90,8 +91,8 @@ export function Navbar({ onOpenDrawer }) {
                     className={clsx(
                       "relative z-10 transition-colors duration-200",
                       isActive
-                        ? "text-ink"
-                        : "text-ink-muted group-hover:text-ink",
+                        ? "text-brand-700"
+                        : "text-text-secondary group-hover:text-brand-700",
                     )}
                   >
                     {link.label}
@@ -99,7 +100,7 @@ export function Navbar({ onOpenDrawer }) {
                   {isActive && (
                     <motion.span
                       layoutId="navbar-active-link"
-                      className="absolute -inset-x-2 -inset-y-1 -z-0 rounded-button bg-accent/10"
+                      className="absolute -inset-x-2 -inset-y-1 -z-0 rounded-button bg-brand-500/10"
                       transition={{
                         type: "spring",
                         stiffness: 420,
@@ -126,8 +127,8 @@ export function Navbar({ onOpenDrawer }) {
                 : "Switch to dark theme"
             }
             whileHover={{ rotate: 8, scale: 1.08 }}
-            whileTap={{ scale: 0.9, rotate: -8 }}
-            className="rounded-full p-2 text-ink-muted transition-colors hover:bg-ink/5 hover:text-ink"
+            whileTap={{ scale: 0.92 }}
+            className="rounded-full p-2 text-text-secondary transition-colors hover:bg-canvas hover:text-brand-700"
           >
             <AnimatePresence initial={false} mode="wait">
               <motion.span
@@ -151,14 +152,14 @@ export function Navbar({ onOpenDrawer }) {
             <>
               <Link
                 to="/saved"
-                className="px-3.5 py-2 rounded-button text-sm font-medium text-ink-muted hover:text-ink hover:bg-ink/5 transition-colors flex items-center gap-1.5"
+                className="px-3.5 py-2 rounded-button text-sm font-medium text-text-secondary hover:text-brand-700 hover:bg-canvas transition-colors flex items-center gap-1.5"
               >
                 <Bookmark className="h-4 w-4" aria-hidden="true" />
                 Saved
               </Link>
               <Link
                 to="/dashboard"
-                className="px-3.5 py-2 rounded-button text-sm font-medium text-ink-muted hover:text-ink hover:bg-ink/5 transition-colors"
+                className="px-3.5 py-2 rounded-button text-sm font-medium text-text-secondary hover:text-brand-700 hover:bg-canvas transition-colors"
               >
                 Hi, {user?.name?.split(" ")[0]}
               </Link>
@@ -173,21 +174,23 @@ export function Navbar({ onOpenDrawer }) {
               >
                 Log out
               </Button>
-              <Button
-                size="sm"
-                onClick={() => {
-                  trackCtaClick("post_a_gig_nav");
-                  navigate("/gigs/new");
-                }}
-              >
-                Post a gig
-              </Button>
+              {user?.user_type === "employer" && (
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    trackCtaClick("post_a_gig_nav");
+                    navigate("/dashboard/post");
+                  }}
+                >
+                  Post an opportunity
+                </Button>
+              )}
             </>
           ) : (
             <>
               <Link
                 to="/login"
-                className="px-3.5 py-2 rounded-button text-sm font-medium text-ink-muted hover:text-ink hover:bg-ink/5 transition-colors"
+                className="px-3.5 py-2 rounded-button text-sm font-medium text-text-secondary hover:text-brand-700 hover:bg-canvas transition-colors"
               >
                 Log in
               </Link>
@@ -210,7 +213,7 @@ export function Navbar({ onOpenDrawer }) {
           aria-label="Open menu"
           whileHover={{ scale: 1.06 }}
           whileTap={{ scale: 0.92 }}
-          className="md:hidden rounded-button p-2 text-ink hover:bg-ink/5 transition-colors"
+          className="md:hidden rounded-button p-2 text-text-secondary hover:bg-canvas transition-colors"
         >
           <Menu className="h-6 w-6" aria-hidden="true" />
         </motion.button>

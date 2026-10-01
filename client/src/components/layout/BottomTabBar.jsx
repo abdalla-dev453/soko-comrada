@@ -1,14 +1,15 @@
 import { NavLink } from "react-router-dom";
-import { Home, PlusCircle, Bell, User } from "lucide-react";
+import { Home, Bookmark, Send, MessageCircle, User } from "lucide-react";
 import clsx from "clsx";
 
 import { useAuth } from "../../hooks/useAuth";
 
 const TABS = [
-  { to: "/", label: "Home", icon: Home, end: true },
-  { to: "/gigs/new", label: "Post", icon: PlusCircle, authOnly: true },
-  { to: "/notifications", label: "Alerts", icon: Bell, authOnly: true },
-  { to: "/dashboard", label: "Profile", icon: User, authOnly: true },
+  { to: "/", label: "Explore", icon: Home, end: true },
+  { to: "/saved", label: "Saved", icon: Bookmark, authOnly: true },
+  { to: "/dashboard/applications", label: "Applications", icon: Send, authOnly: true },
+  { to: "/messages", label: "Messages", icon: MessageCircle, authOnly: true },
+  { to: "/profile", label: "Profile", icon: User, authOnly: true },
 ];
 
 export function BottomTabBar() {
@@ -17,10 +18,9 @@ export function BottomTabBar() {
   return (
     <nav
       aria-label="Primary mobile"
-      className="fixed inset-x-0 bottom-0 z-40 bg-surface-raised/95 backdrop-blur-nav md:hidden"
-      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      className="bottom-nav"
     >
-      <ul className="grid grid-cols-4">
+      <ul className="grid grid-cols-5 w-full">
         {TABS.map((tab) => {
           const Icon = tab.icon;
           const to = tab.authOnly && !isAuthenticated ? "/login" : tab.to;
@@ -31,8 +31,8 @@ export function BottomTabBar() {
                 end={tab.end}
                 className={({ isActive }) =>
                   clsx(
-                    "flex flex-col items-center gap-1 py-2.5 text-xs font-medium transition-colors",
-                    isActive ? "text-accent" : "text-ink-muted"
+                    "bottom-nav-item",
+                    isActive && "active",
                   )
                 }
               >
