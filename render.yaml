@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: campusgig-kenya-api
+    runtime: python3
+    build:
+      dockerfilePath: server/Dockerfile
+      buildCommand: pip install --no-cache-dir -r server/requirements.txt
+    run:
+      dockerfilePath: server/Dockerfile
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        value: sqlite:///render.sqlite
+      - key: RATELIMIT_STORAGE_URI
+        value: memory://
+      - key: CORS_ORIGINS
+        value: https://campusgig-kenya.onrender.com

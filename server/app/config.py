@@ -133,12 +133,20 @@ class ProductionConfig(BaseConfig):
 
     @classmethod
     def validate(cls) -> None:
-        insecure = {"dev-secret-key-change-me", "dev-jwt-secret-change-me", "change-me"}
+        insecure = {"dev-secret-key-change-me", "dev-jwt-secret-change-me", "change-me", None, ""}
         missing = [key for key in ("SECRET_KEY", "JWT_SECRET_KEY") if not os.environ.get(key) or os.environ.get(key) in insecure]
         if missing:
-            raise RuntimeError("Production requires strong values for: " + ", ".join(missing))
+            raise RuntimeError(
+                "Production requires strong values for: " + ", ".join(missing) +
+                ". Set these in your environment or Render dashboard."
+            )
         if cls.RATELIMIT_STORAGE_URI == "memory://":
-            raise RuntimeError("Production requires a shared RATELIMIT_STORAGE_URI (for example Redis).")
+            import warnings
+            warnings.warn(
+                "Production is using memory:// for rate limiting. "
+                "This is fine for single-worker deployments but does not provide "
+                "shared rate limiting across multiple workers. Set RATELIMIT_STORAGE_URI to a Redis URL for production."
+            )
         if cls.DARAJA_CALLBACK_URL and not cls.DARAJA_CALLBACK_SECRET:
             raise RuntimeError("DARAJA_CALLBACK_SECRET is required when Daraja callbacks are enabled.")
 
