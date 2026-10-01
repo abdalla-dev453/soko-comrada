@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 
 from app.extensions import db
 from app.models.application import Application, ApplicationStatus
-from app.models.gig import Gig, GigStatus
+from app.models.opportunity import Gig, GigStatus
 
 
 class DisputeError(Exception):
@@ -29,7 +29,7 @@ def get_accepted_applicant_ids(gig: Gig) -> list[int]:
     return [
         a.applicant_id
         for a in Application.query.filter_by(
-            gig_id=gig.id, status=ApplicationStatus.ACCEPTED
+            opportunity_id=gig.id, status=ApplicationStatus.ACCEPTED
         ).all()
     ]
 
@@ -37,7 +37,7 @@ def get_accepted_applicant_ids(gig: Gig) -> list[int]:
 def get_role(gig: Gig, user_id: int) -> str | None:
     """Returns 'poster', 'counterparty', or None if the user has no
     standing to act on this gig's completion."""
-    if gig.poster_id == user_id:
+    if gig.employer_id == user_id:
         return "poster"
     if user_id in get_accepted_applicant_ids(gig):
         return "counterparty"

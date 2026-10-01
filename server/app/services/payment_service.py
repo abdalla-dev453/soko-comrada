@@ -22,7 +22,7 @@ from flask import current_app
 from sqlalchemy.exc import IntegrityError
 
 from app.extensions import db
-from app.models.gig import Gig
+from app.models.opportunity import Gig
 from app.models.payment import Payment, PaymentMethod, PaymentPurpose, PaymentStatus
 from app.models.user import User
 from app.utils.validators import normalize_mpesa_code, validate_mpesa_code
@@ -44,6 +44,12 @@ class PaymentError(Exception):
 
 
 def fee_for_purpose(app_config, purpose: PaymentPurpose) -> float:
+    if purpose == PaymentPurpose.EMPLOYER_LISTING_FEE:
+        return float(app_config.get("LISTING_FEE_KES", 500))
+    if purpose == PaymentPurpose.EMPLOYER_SUBSCRIPTION or purpose == PaymentPurpose.SUBSCRIPTION:
+        return float(app_config.get("SUBSCRIPTION_FEE_KES", 2000))
+    if purpose == PaymentPurpose.FEATURED_LISTING:
+        return float(app_config.get("FEATURED_LISTING_FEE_KES", 300))
     if purpose == PaymentPurpose.BOOST:
         return float(app_config["BOOST_FEE_KES"])
     if purpose == PaymentPurpose.SUBSCRIPTION:
@@ -54,7 +60,7 @@ def fee_for_purpose(app_config, purpose: PaymentPurpose) -> float:
 def _validate_boost_target(user: User, purpose: PaymentPurpose, gig: Gig | None) -> None:
     if purpose == PaymentPurpose.BOOST and gig is None:
         raise PaymentError("A gig_id is required to boost a gig.")
-    if purpose == PaymentPurpose.BOOST and gig.poster_id != user.id:
+    if purpose == PaymentPurpose.BOOST and gig is not None and gig.employer_id != user.id:
         raise PaymentError("You can only boost your own gig.", status_code=403)
 
 
@@ -85,7 +91,7 @@ def submit_payment(
 
     payment = Payment(
         user_id=user.id,
-        gig_id=gig.id if gig else None,
+        opportunity_id=gig.id if gig else None,
         mpesa_code=code,
         amount=amount,
         purpose=purpose,
@@ -136,7 +142,7 @@ def initiate_stk_payment(
 
     payment = Payment(
         user_id=user.id,
-        gig_id=gig.id if gig else None,
+        opportunity_id=gig.id if gig else None,
         mpesa_code=None,
         amount=amount,
         purpose=purpose,
@@ -209,13 +215,13 @@ def redeem_boost_credit(*, user: User, gig: Gig) -> Payment:
     of paying. Raises PaymentError if the user has none."""
     if user.free_boost_credits <= 0:
         raise PaymentError("You don't have a free boost credit to redeem.")
-    if gig.poster_id != user.id:
+    if gig.employer_id != user.id:
         raise PaymentError("You can only boost your own gig.", status_code=403)
 
     user.free_boost_credits -= 1
     payment = Payment(
         user_id=user.id,
-        gig_id=gig.id,
+        opportunity_id=gig.id,
         mpesa_code=None,
         amount=0,
         purpose=PaymentPurpose.BOOST,
@@ -233,23 +239,47 @@ def redeem_boost_credit(*, user: User, gig: Gig) -> Payment:
 def apply_verified_payment(payment: Payment) -> None:
     """Side effects of a payment becoming VERIFIED (manual admin
     approval, a Daraja callback, or a redeemed credit): activate the
-    boost or extend the subscription. Idempotent-ish — re-running it
-    just re-extends the window, which is an acceptable behavior (no
-    destructive effect)."""
+    boost or extend the subscription. Idempotent-ish."""
     now = datetime.now(timezone.utc)
 
-    if payment.purpose == PaymentPurpose.BOOST and payment.gig is not None:
-        payment.gig.is_boosted = True
-        payment.gig.boost_expires_at = now + timedelta(hours=BOOST_DURATION_HOURS)
-        db.session.add(payment.gig)
+    if payment.purpose == PaymentPurpose.BOOST and payment.opportunity is not None:
+        payment.opportunity.is_boosted = True
+        payment.opportunity.boost_expires_at = now + timedelta(hours=BOOST_DURATION_HOURS)
+        db.session.add(payment.opportunity)
 
-    elif payment.purpose == PaymentPurpose.SUBSCRIPTION:
-        payment.user.is_verified_entrepreneur = True
-        db.session.add(payment.user)
+    elif payment.purpose in (PaymentPurpose.SUBSCRIPTION, PaymentPurpose.EMPLOYER_SUBSCRIPTION):
+        payment.user.is_verified_employer = True
+        if payment.user.employer_profile:
+            payment.user.employer_profile.subscription_tier = "PRO"
+            payment.user.employer_profile.subscription_expires_at = now + timedelta(days=30)
+            payment.user.employer_profile.listings_limit = 50
+            db.session.add(payment.user.employer_profile)
+
+    elif payment.purpose == PaymentPurpose.EMPLOYER_LISTING_FEE and payment.opportunity is not None:
+        # Listing fee verified - opportunity is now active
+        from app.models.opportunity import GigStatus
+        payment.opportunity.status = GigStatus.OPEN
+        payment.opportunity.flagged_for_review = False
+        payment.opportunity.moderated_at = now
+        db.session.add(payment.opportunity)
+
+    elif payment.purpose == PaymentPurpose.FEATURED_LISTING and payment.opportunity is not None:
+        payment.opportunity.is_featured = True
+        payment.opportunity.featured_expires_at = now + timedelta(days=7)
+        db.session.add(payment.opportunity)
 
     db.session.commit()
 
-    purpose_label = "boost" if payment.purpose == PaymentPurpose.BOOST else "entrepreneur subscription"
+    purpose_label = {
+        PaymentPurpose.BOOST: "boost",
+        PaymentPurpose.SUBSCRIPTION: "entrepreneur subscription",
+        PaymentPurpose.EMPLOYER_SUBSCRIPTION: "employer subscription",
+        PaymentPurpose.EMPLOYER_LISTING_FEE: "listing fee",
+        PaymentPurpose.FEATURED_LISTING: "featured listing",
+        PaymentPurpose.ESCROW: "escrow",
+        PaymentPurpose.REFERRAL_CREDIT: "referral credit",
+    }.get(payment.purpose, payment.purpose.value)
+
     whatsapp_service.notify_payment_verified(
         current_app.config,
         to_phone=payment.user.phone_number,

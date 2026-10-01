@@ -111,3 +111,13 @@ def notify_payment_verified(app_config, *, to_phone, purpose_label, logger=None)
         template_params=[purpose_label],
         logger=logger,
     )
+
+
+def notify_employer_approved(app_config, *, to_phone, business_name, logger=None):
+    return send_whatsapp_message(
+        app_config,
+        to_phone_number=to_phone,
+        template_name="comradeplug_employer_approved",
+        template_params=[business_name],
+        logger=logger,
+    )

@@ -1,18 +1,14 @@
 """Notification domain logic.
 
-PRD §5.5 asks for an "in-app notification center" but the refined
-schema in PRD §8 deliberately has no notifications table (SMS/push
-and its persistence layer are called out as Phase 2 roadmap items,
-not MVP). Rather than adding a table the PRD didn't scope, the MVP
-notification feed is computed on read from state that already
-exists — recent application/review activity touching the current
-user — which is enough for the "new application / accepted /
-rejected / completed / review received" events §5.5 lists, with zero
-extra write paths to keep consistent.
+PRD §5.5 asks for an "in-app notification center" — the refined
+schema has no dedicated notifications table; the notification feed is
+computed on read from state that already exists — recent application
+/review activity touching the current user — which is enough for the
+"new application / accepted / rejected / completed / review received"
+events §5.5 lists.
 
 Email is the one channel PRD §5.5 says must be persisted/delivered
-for a *critical* action (an accepted application) rather than merely
-computed — that's handled by send_critical_email below.
+for a *critical* action (an accepted application).
 """
 
 import smtplib
@@ -21,7 +17,7 @@ from datetime import datetime, timezone
 from email.message import EmailMessage
 
 from app.models.application import Application, ApplicationStatus
-from app.models.gig import Gig, GigStatus
+from app.models.opportunity import Opportunity as Gig, GigStatus
 from app.models.review import Review
 
 
@@ -30,27 +26,28 @@ class NotificationItem:
     type: str
     message: str
     created_at: datetime
-    gig_id: int | None = None
+    opportunity_id: int | None = None
 
     def to_dict(self) -> dict:
         return {
             "type": self.type,
             "message": self.message,
             "created_at": self.created_at.isoformat(),
-            "gig_id": self.gig_id,
+            "opportunity_id": self.opportunity_id,
+            "gig_id": self.opportunity_id,  # Backward compat
         }
 
 
 def get_notifications_for_user(user_id: int, limit: int = 20) -> list[dict]:
     items: list[NotificationItem] = []
 
-    # New applications on gigs this user posted.
-    my_gig_ids_subq = Gig.query.with_entities(Gig.id).filter(Gig.poster_id == user_id)
-    my_gig_ids = [row[0] for row in my_gig_ids_subq]
+    # New applications on opportunities this user posted.
+    my_opportunity_ids_subq = Gig.query.with_entities(Gig.id).filter(Gig.employer_id == user_id)
+    my_opportunity_ids = [row[0] for row in my_opportunity_ids_subq]
 
-    if my_gig_ids:
+    if my_opportunity_ids:
         incoming = (
-            Application.query.filter(Application.gig_id.in_(my_gig_ids))
+            Application.query.filter(Application.opportunity_id.in_(my_opportunity_ids))
             .order_by(Application.created_at.desc())
             .limit(limit)
             .all()
@@ -59,9 +56,9 @@ def get_notifications_for_user(user_id: int, limit: int = 20) -> list[dict]:
             items.append(
                 NotificationItem(
                     type="new_application",
-                    message=f'{app_.applicant.name} applied to your gig "{app_.gig.title}".',
+                    message=f'{app_.applicant.name} applied to your opportunity "{app_.opportunity.title}".',
                     created_at=app_.created_at,
-                    gig_id=app_.gig_id,
+                    opportunity_id=app_.opportunity_id,
                 )
             )
 
@@ -69,37 +66,41 @@ def get_notifications_for_user(user_id: int, limit: int = 20) -> list[dict]:
     mine = (
         Application.query.filter(
             Application.applicant_id == user_id,
-            Application.status != ApplicationStatus.PENDING,
+            Application.status != ApplicationStatus.SUBMITTED,
         )
         .order_by(Application.created_at.desc())
         .limit(limit)
         .all()
     )
     for app_ in mine:
-        verb = "accepted" if app_.status == ApplicationStatus.ACCEPTED else "rejected"
+        verb = "accepted" if app_.status == ApplicationStatus.ACCEPTED else \
+               "shortlisted" if app_.status == ApplicationStatus.SHORTLISTED else \
+               "rejected" if app_.status == ApplicationStatus.REJECTED else \
+               "completed" if app_.status == ApplicationStatus.COMPLETED else \
+               app_.status.value.lower()
         items.append(
             NotificationItem(
                 type=f"application_{verb}",
-                message=f'Your application for "{app_.gig.title}" was {verb}.',
+                message=f'Your application for "{app_.opportunity.title}" was {verb}.',
                 created_at=app_.created_at,
-                gig_id=app_.gig_id,
+                opportunity_id=app_.opportunity_id,
             )
         )
 
-    # Gigs the user posted that are now completed.
+    # Opportunities the user posted that are now completed.
     completed = (
-        Gig.query.filter(Gig.poster_id == user_id, Gig.status == GigStatus.COMPLETED)
+        Gig.query.filter(Gig.employer_id == user_id, Gig.status == GigStatus.COMPLETED)
         .order_by(Gig.created_at.desc())
         .limit(limit)
         .all()
     )
-    for gig in completed:
+    for opp in completed:
         items.append(
             NotificationItem(
-                type="gig_completed",
-                message=f'Your gig "{gig.title}" was marked completed.',
-                created_at=gig.created_at,
-                gig_id=gig.id,
+                type="opportunity_completed",
+                message=f'Your opportunity "{opp.title}" was marked completed.',
+                created_at=opp.created_at,
+                opportunity_id=opp.id,
             )
         )
 
@@ -116,7 +117,7 @@ def get_notifications_for_user(user_id: int, limit: int = 20) -> list[dict]:
                 type="review_received",
                 message=f"You received a {review.rating}-star review.",
                 created_at=review.created_at,
-                gig_id=review.gig_id,
+                opportunity_id=review.opportunity_id,
             )
         )
 
@@ -128,10 +129,7 @@ def send_critical_email(app_config, to_email: str, subject: str, body: str, logg
     """Best-effort email fallback for critical actions (PRD §5.5).
 
     Returns True if a send was attempted successfully, False if it
-    was only logged (no SMTP configured) or failed. Never raises —
-    a notification failure must not fail the request that triggered
-    it (e.g. accepting an application should still succeed even if
-    the email bounces).
+    was only logged (no SMTP configured) or failed. Never raises.
     """
     host = app_config.get("SMTP_HOST")
     if not host:
