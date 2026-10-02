@@ -21,6 +21,7 @@ const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Admin = lazy(() => import("./pages/Admin"));
 const SavedListings = lazy(() => import("./pages/SavedListings"));
+const SavedSearches = lazy(() => import("./pages/SavedSearches"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 export default function App() {
@@ -38,6 +39,7 @@ export default function App() {
           <Route path="privacy" element={<Privacy />} />
           <Route path="terms" element={<Terms />} />
           <Route path="saved" element={<SavedListings />} />
+          <Route path="saved-searches" element={<SavedSearches />} />
 
           <Route element={<GuestOnlyRoute />}>
             <Route path="login" element={<Login />} />

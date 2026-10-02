@@ -1,7 +1,11 @@
+import { useLocation } from "react-router-dom";
+
 import { SEO } from "../components/common/SEO";
 import { GigFeed } from "../components/gigs/GigFeed";
 
 export default function GigsBrowse() {
+  const location = useLocation();
+
   return (
     <>
       <SEO
@@ -17,7 +21,7 @@ export default function GigsBrowse() {
             actually reachable.
           </p>
         </div>
-        <GigFeed />
+        <GigFeed initialFilters={location.state?.savedFilters} />
       </div>
     </>
   );

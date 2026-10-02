@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Star, Briefcase, ClipboardList, Wallet, PlusCircle, ShieldCheck, Gift, Copy } from "lucide-react";
+import { Star, Briefcase, ClipboardList, Wallet, PlusCircle, ShieldCheck, Gift, Copy, Bell, Search } from "lucide-react";
 import clsx from "clsx";
 
 import { SEO } from "../components/common/SEO";
@@ -13,6 +13,11 @@ import { PaymentModal } from "../components/payments/PaymentModal";
 import { fetchMyApplications, fetchMyGigs } from "../api/gigs";
 import { fetchMyPayments } from "../api/payments";
 import { formatCurrency } from "../utils/formatCurrency";
+import {
+  getAlertPreferences,
+  getSavedSearches,
+  setAlertPreferences,
+} from "../utils/savedSearches";
 import { useAuth } from "../hooks/useAuth";
 import { useToast } from "../hooks/useToast";
 
@@ -23,9 +28,16 @@ export default function Dashboard() {
   const [gigs, setGigs] = useState(null);
   const [applications, setApplications] = useState(null);
   const [payments, setPayments] = useState(null);
+  const [savedSearches, setSavedSearches] = useState([]);
+  const [alertPreferences, setAlertPreferencesState] = useState(getAlertPreferences());
   const [subscriptionOpen, setSubscriptionOpen] = useState(false);
 
   const loadPayments = () => fetchMyPayments().then(setPayments).catch(() => setPayments([]));
+
+  useEffect(() => {
+    setSavedSearches(getSavedSearches());
+    setAlertPreferencesState(getAlertPreferences());
+  }, []);
 
   useEffect(() => {
     fetchMyGigs().then(setGigs).catch(() => setGigs([]));
@@ -91,6 +103,70 @@ export default function Dashboard() {
             <Button as={Link} to="/gigs/new" icon={PlusCircle}>
               Post a gig
             </Button>
+          </div>
+        </div>
+
+        <div className="mt-5 grid gap-4 lg:grid-cols-[1.2fr,0.8fr]">
+          <div className="rounded-card border border-border bg-surface-raised p-4 shadow-card">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 text-sm font-medium text-ink">
+                <Search className="h-4 w-4 text-accent" aria-hidden="true" />
+                Saved searches
+              </div>
+              <Link to="/saved-searches" className="text-xs text-accent underline-offset-2 hover:underline">
+                Manage
+              </Link>
+            </div>
+
+            {savedSearches.length === 0 ? (
+              <p className="text-sm text-ink-muted">No saved searches yet. Save one from the gigs page.</p>
+            ) : (
+              <ul className="space-y-2">
+                {savedSearches.slice(0, 3).map((search) => (
+                  <li key={search.id} className="rounded-lg border border-border bg-surface p-2 text-sm">
+                    <p className="font-medium text-ink">{search.name}</p>
+                    <p className="text-ink-muted text-xs">
+                      {Object.values(search.filters || {}).filter(Boolean).join(" · ") || "Any open gigs"}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <div className="rounded-card border border-border bg-surface-raised p-4 shadow-card">
+            <div className="mb-3 flex items-center gap-2 text-sm font-medium text-ink">
+              <Bell className="h-4 w-4 text-success" aria-hidden="true" />
+              Alert preferences
+            </div>
+            <div className="space-y-3 text-sm text-ink">
+              <label className="flex items-center justify-between gap-3 rounded-lg border border-border bg-surface p-2.5">
+                <span>Matching gig alerts</span>
+                <input
+                  type="checkbox"
+                  checked={Boolean(alertPreferences.matchingGigs)}
+                  onChange={() => {
+                    const next = { ...alertPreferences, matchingGigs: !alertPreferences.matchingGigs };
+                    setAlertPreferencesState(next);
+                    setAlertPreferences(next);
+                  }}
+                  className="h-4 w-4 rounded border-border text-accent focus:ring-accent/20"
+                />
+              </label>
+              <label className="flex items-center justify-between gap-3 rounded-lg border border-border bg-surface p-2.5">
+                <span>Application updates</span>
+                <input
+                  type="checkbox"
+                  checked={Boolean(alertPreferences.applicationUpdates)}
+                  onChange={() => {
+                    const next = { ...alertPreferences, applicationUpdates: !alertPreferences.applicationUpdates };
+                    setAlertPreferencesState(next);
+                    setAlertPreferences(next);
+                  }}
+                  className="h-4 w-4 rounded border-border text-accent focus:ring-accent/20"
+                />
+              </label>
+            </div>
           </div>
         </div>
 

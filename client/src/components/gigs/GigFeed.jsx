@@ -1,4 +1,5 @@
-import { PackageSearch } from "lucide-react";
+import { PackageSearch, BookmarkPlus } from "lucide-react";
+import { useState } from "react";
 
 import { GigCard } from "./GigCard";
 import { GigFilters } from "./GigFilters";
@@ -7,6 +8,7 @@ import { EmptyState } from "../common/EmptyState";
 import { ErrorBanner } from "../common/ErrorBanner";
 import { Button } from "../common/Button";
 import { useGigs } from "../../hooks/useGigs";
+import { upsertSavedSearch } from "../../utils/savedSearches";
 
 export function GigFeed({ initialFilters }) {
   const {
@@ -23,10 +25,41 @@ export function GigFeed({ initialFilters }) {
     error,
     reload,
   } = useGigs(initialFilters);
+  const [saveStatus, setSaveStatus] = useState("");
+
+  const handleSaveCurrentSearch = () => {
+    const suggestedName = [filters.campus, filters.category, filters.type]
+      .filter(Boolean)
+      .join(" / ") || "My campus search";
+
+    const name = window.prompt("Name this saved search", suggestedName);
+    if (!name) return;
+
+    const result = upsertSavedSearch({ name, filters: { ...filters } });
+    if (result) {
+      setSaveStatus(`Saved “${result.name}”`);
+    }
+  };
 
   return (
     <div>
-      <GigFilters filters={filters} onChange={updateFilters} onReset={resetFilters} />
+      <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <GigFilters filters={filters} onChange={updateFilters} onReset={resetFilters} />
+        <Button
+          type="button"
+          variant="secondary"
+          icon={BookmarkPlus}
+          size="sm"
+          onClick={handleSaveCurrentSearch}
+          className="whitespace-nowrap"
+        >
+          Save search
+        </Button>
+      </div>
+
+      {saveStatus && (
+        <p className="mt-3 text-sm text-success">{saveStatus}</p>
+      )}
 
       <div className="mt-6">
         {isLoading && <GigFeedSkeleton />}
