@@ -13,6 +13,17 @@ go live, doesn't come back for the multi-person-gig feature.
 
 ---
 
+## Product roadmap summary
+
+| Phase | Build | Why |
+| --- | --- | --- |
+| 1: MVP | Profiles, verification, listings, applications, basic portfolio, admin moderation, ratings | Creates a trusted opportunity marketplace |
+| 2: Retention | Alerts, saved searches, application tracker, talent pools, templates, interview scheduling | Gives users a reason to return often |
+| 3: Trust depth | Agreements, proof-of-work, advanced reporting, dispute workspace, fraud flags | Reduces bad experiences as volume rises |
+| 4: Scale | Native app, AI assistance, structured chat, multi-campus system, regulated payments partner | Improves convenience once core behaviour is proven |
+
+---
+
 ## Roadmap at a glance
 
 | # | Phase | Timeframe | Effort | Blocks on |
