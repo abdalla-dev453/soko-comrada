@@ -61,7 +61,10 @@ export function Navbar({ onOpenDrawer }) {
         initial="hidden"
         animate="show"
         variants={navContainer}
-        className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6"
+        className={clsx(
+          "mx-auto flex max-w-6xl items-center justify-between px-4 transition-[padding] duration-200 sm:px-6",
+          scrolled ? "py-2" : "py-3",
+        )}
         aria-label="Primary"
       >
         <motion.div
@@ -86,7 +89,13 @@ export function Navbar({ onOpenDrawer }) {
               className="group relative rounded-button px-3.5 py-2 text-sm font-medium transition-colors"
             >
               {({ isActive }) => (
-                <motion.span variants={navItem} className="relative block">
+                <motion.span
+                  variants={navItem}
+                  whileHover={{ y: -1 }}
+                  whileTap={{ scale: 0.96 }}
+                  transition={{ type: "spring", stiffness: 420, damping: 24 }}
+                  className="relative block"
+                >
                   <span
                     className={clsx(
                       "relative z-10 transition-colors duration-200",
@@ -126,8 +135,8 @@ export function Navbar({ onOpenDrawer }) {
                 ? "Switch to light theme"
                 : "Switch to dark theme"
             }
-            whileHover={{ rotate: 8, scale: 1.08 }}
-            whileTap={{ scale: 0.92 }}
+            whileHover={{ rotate: theme === "dark" ? -15 : 15, scale: 1.1 }}
+            whileTap={{ rotate: 0, scale: 0.9 }}
             className="rounded-full p-2 text-text-secondary transition-colors hover:bg-canvas hover:text-brand-700"
           >
             <AnimatePresence initial={false} mode="wait">
@@ -211,8 +220,8 @@ export function Navbar({ onOpenDrawer }) {
           type="button"
           onClick={onOpenDrawer}
           aria-label="Open menu"
-          whileHover={{ scale: 1.06 }}
-          whileTap={{ scale: 0.92 }}
+          whileHover={{ rotate: -5, scale: 1.06 }}
+          whileTap={{ rotate: 5, scale: 0.92 }}
           className="md:hidden rounded-button p-2 text-text-secondary hover:bg-canvas transition-colors"
         >
           <Menu className="h-6 w-6" aria-hidden="true" />

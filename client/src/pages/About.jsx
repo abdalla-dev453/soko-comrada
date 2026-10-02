@@ -15,25 +15,32 @@ export default function About() {
         path="/about"
       />
 
-      <section className="relative isolate mx-auto max-w-3xl overflow-hidden rounded-b-card border-b border-border bg-gradient-to-br from-accent-soft to-surface-raised px-4 pt-16 pb-12 dark:from-accent-soft/20 sm:px-6">
-        <div className="-z-1 absolute top-[-6rem] right-[-6rem] h-80 w-80 rounded-full bg-accent-soft blur-3xl" />
-        <motion.div variants={heroContainer} initial="hidden" animate="show">
-          <motion.h1 variants={heroItem} className="font-display font-bold text-3xl tracking-tight text-ink">
+      <section
+        className="w-full border-b border-border bg-brand-900 bg-cover bg-center text-on-brand"
+        style={{
+          backgroundImage:
+            "linear-gradient(90deg, rgba(11, 31, 58, 0.93) 0%, rgba(11, 31, 58, 0.78) 55%, rgba(11, 31, 58, 0.42) 100%), url('/images/student-collaboration.jpg')",
+        }}
+      >
+        <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 sm:py-20">
+          <motion.div variants={heroContainer} initial="hidden" animate="show" className="max-w-3xl">
+          <motion.h1 variants={heroItem} className="font-display text-3xl font-bold text-on-brand sm:text-4xl">
             Built by people who were tired of the group chat.
           </motion.h1>
-          <motion.p variants={heroItem} className="mt-6 text-lg text-ink-muted leading-relaxed">
+          <motion.p variants={heroItem} className="mt-6 text-lg leading-relaxed text-on-brand/85">
             Every campus already has an informal gig economy — someone who does hair
             braiding out of their room, someone who'll print your assignment at 11pm,
             someone who'll move your boxes for a few hundred bob. It just runs on
             scattered WhatsApp groups, word of mouth, and a fair amount of trust that
             occasionally gets burned.
           </motion.p>
-          <motion.p variants={heroItem} className="mt-4 text-lg text-ink-muted leading-relaxed">
+          <motion.p variants={heroItem} className="mt-4 text-lg leading-relaxed text-on-brand/85">
             ComradePlug doesn't invent that economy — it gives it a real address. One
             place, scoped to your own campus, where a task gets found in minutes instead
             of five group chats, and where a good track record actually follows you.
           </motion.p>
         </motion.div>
+        </div>
       </section>
 
       <section className="bg-surface-raised">

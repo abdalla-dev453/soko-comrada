@@ -5,6 +5,11 @@ export default {
     extend: {
       colors: {
         // CampusGig Kenya design system
+        ink: "rgb(var(--brand-900) / <alpha-value>)",
+        accent: "rgb(var(--brand-700) / <alpha-value>)",
+        "accent-soft": "rgb(var(--brand-500) / <alpha-value>)",
+        "on-brand": "rgb(var(--on-brand) / <alpha-value>)",
+        "surface-raised": "rgb(var(--surface) / <alpha-value>)",
         "brand-900": "rgb(var(--brand-900) / <alpha-value>)",
         "brand-700": "rgb(var(--brand-700) / <alpha-value>)",
         "brand-500": "rgb(var(--brand-500) / <alpha-value>)",

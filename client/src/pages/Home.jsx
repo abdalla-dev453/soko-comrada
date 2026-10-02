@@ -10,7 +10,7 @@ import { GigFeedSkeleton } from "../components/common/Skeleton";
 import { fetchGigs } from "../api/gigs";
 import { useAuth } from "../hooks/useAuth";
 import { trackCtaClick } from "../utils/analytics";
-import { cardContainer, cardReveal, heroContainer, heroItem, sectionReveal } from "../utils/motion";
+import { cardContainer, cardReveal, sectionReveal } from "../utils/motion";
 
 const STEPS = [
   {
@@ -59,49 +59,54 @@ export default function Home() {
         path="/"
       />
 
-      <section className="relative isolate mx-auto max-w-6xl overflow-hidden rounded-b-card border-b border-border bg-gradient-to-br from-accent-soft to-surface-raised px-4 pt-16 pb-20 dark:from-accent-soft/20 sm:px-6">
-        <div className="-z-1 absolute top-[-6rem] right-[-6rem] h-80 w-80 -translate-y-1/4 rounded-full bg-accent-soft blur-3xl" />
-        <motion.div variants={heroContainer} initial="hidden" animate="show" className="relative max-w-3xl">
-          <motion.p variants={heroItem} className="mb-4 text-xs font-semibold uppercase tracking-[0.08em] text-accent">
-            Built for one campus at a time — starting with MUT, Murang'a
-          </motion.p>
-          <motion.h1
-            variants={heroItem}
-            className="font-display font-bold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-ink"
-          >
-            The hustle economy your campus already runs, minus the scams.
-          </motion.h1>
-          <motion.p variants={heroItem} className="mt-6 text-lg text-ink-muted max-w-2xl">
-            ComradePlug turns your class group chats' informal gig economy into a real
-            marketplace: verified students, visible ratings, and a fair price — all
-            scoped to your own campus.
-          </motion.p>
-          <motion.div variants={heroItem} className="mt-8 flex flex-wrap items-center gap-3">
-            <Button
-              size="lg"
-              icon={ArrowRight}
-              iconPosition="right"
-              onClick={() => trackCtaClick("hero_post_gig")}
-              as={Link}
-              to={isAuthenticated ? "/gigs/new" : "/register"}
-            >
-              Post a gig
-            </Button>
-            <Button
-              size="lg"
-              variant="secondary"
-              onClick={() => trackCtaClick("hero_browse_gigs")}
-              as={Link}
-              to="/gigs"
-            >
-              Browse gigs
-            </Button>
-          </motion.div>
-        </motion.div>
+      <section
+        className="w-full bg-ink text-surface bg-cover bg-center"
+        style={{
+          backgroundImage:
+            "linear-gradient(90deg, rgba(11, 31, 58, 0.96) 0%, rgba(11, 31, 58, 0.88) 48%, rgba(11, 31, 58, 0.38) 100%), linear-gradient(0deg, rgba(11, 31, 58, 0.28), rgba(11, 31, 58, 0.08)), url('/images/campus-gathering.jpg')",
+        }}
+      >
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:py-24">
+          <div className="max-w-3xl">
+            <p className="mb-5 text-xs font-semibold uppercase text-success-500">
+              Built for one campus at a time — starting with MUT, Murang'a
+            </p>
+            <h1 className="font-display text-4xl font-bold leading-tight text-on-brand sm:text-5xl lg:text-6xl">
+              The hustle economy your campus already runs, minus the scams.
+            </h1>
+            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-on-brand/75">
+              ComradePlug turns your class group chats' informal gig economy into a real
+              marketplace: verified students, visible ratings, and a fair price — all
+              scoped to your own campus.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <Button
+                size="lg"
+                icon={ArrowRight}
+                iconPosition="right"
+                onClick={() => trackCtaClick("hero_post_gig")}
+                as={Link}
+                to={isAuthenticated ? "/gigs/new" : "/register"}
+              >
+                Post a gig
+              </Button>
+              <Button
+                size="lg"
+                variant="secondary"
+                className="!border-on-brand/30 !text-on-brand hover:!bg-on-brand/10"
+                onClick={() => trackCtaClick("hero_browse_gigs")}
+                as={Link}
+                to="/gigs"
+              >
+                Browse gigs
+              </Button>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section className="bg-surface-raised">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
           <motion.h2
             variants={sectionReveal}
             initial="hidden"
@@ -119,8 +124,8 @@ export default function Home() {
             className="grid gap-8 sm:grid-cols-3"
           >
             {STEPS.map((step) => (
-              <motion.div key={step.number} variants={cardReveal} className="card border border-border p-5 shadow-card hover:border-accent/50">
-                <span className="inline-flex font-display font-bold text-2xl text-accent">
+                <motion.div key={step.number} variants={cardReveal} className="card rounded-md border border-border p-6 shadow-card transition-shadow hover:shadow-card-hover">
+                  <span className="inline-flex font-display font-bold text-2xl text-success-700">
                   {step.number}
                 </span>
                 <h3 className="mt-4 font-display font-bold text-lg">{step.title}</h3>
@@ -169,40 +174,40 @@ export default function Home() {
         )}
       </section>
 
-      <section className="bg-ink text-surface">
+      <section className="bg-brand-900 text-on-brand">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
           <div className="grid gap-8 sm:grid-cols-3">
             <div className="flex gap-3">
-              <ShieldCheck className="h-6 w-6 flex-shrink-0 text-accent" aria-hidden="true" />
+              <ShieldCheck className="h-6 w-6 flex-shrink-0 text-success-500" aria-hidden="true" />
               <div>
-                <h3 className="font-display font-semibold text-base">
+                <h3 className="font-display font-semibold text-base text-on-brand">
                   Verified by student email
                 </h3>
-                <p className="mt-1 text-sm text-surface/70">
+                <p className="mt-1 text-sm text-on-brand/70">
                   Registration is restricted to recognized .ac.ke domains, so you know
                   who you're dealing with.
                 </p>
               </div>
             </div>
             <div className="flex gap-3">
-              <MapPinned className="h-6 w-6 flex-shrink-0 text-accent" aria-hidden="true" />
+              <MapPinned className="h-6 w-6 flex-shrink-0 text-success-500" aria-hidden="true" />
               <div>
-                <h3 className="font-display font-semibold text-base">
+                <h3 className="font-display font-semibold text-base text-on-brand">
                   Scoped to your campus
                 </h3>
-                <p className="mt-1 text-sm text-surface/70">
+                <p className="mt-1 text-sm text-on-brand/70">
                   You're not competing with the whole city — just the people you'll
                   actually run into.
                 </p>
               </div>
             </div>
             <div className="flex gap-3">
-              <Clock className="h-6 w-6 flex-shrink-0 text-accent" aria-hidden="true" />
+              <Clock className="h-6 w-6 flex-shrink-0 text-success-500" aria-hidden="true" />
               <div>
-                <h3 className="font-display font-semibold text-base">
+                <h3 className="font-display font-semibold text-base text-on-brand">
                   Built for "I need this in 2 hours"
                 </h3>
-                <p className="mt-1 text-sm text-surface/70">
+                <p className="mt-1 text-sm text-on-brand/70">
                   Flag a gig urgent and it stands out in the feed — no channel for this
                   existed before.
                 </p>
@@ -213,15 +218,15 @@ export default function Home() {
           <div className="mt-14 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-1.5">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="h-4 w-4 fill-accent text-accent" aria-hidden="true" />
+                <Star key={i} className="h-4 w-4 fill-warning-500 text-warning-500" aria-hidden="true" />
               ))}
-              <span className="ml-2 text-sm text-surface/70">
+              <span className="ml-2 text-sm text-on-brand/70">
                 Rated by students who've actually used it
               </span>
             </div>
             <Button
               variant="secondary"
-              className="!border-surface/30 !text-surface hover:!bg-surface/10"
+              className="!border-on-brand/30 !text-on-brand hover:!bg-on-brand/10"
               as={Link}
               to={isAuthenticated ? "/gigs/new" : "/register"}
             >
