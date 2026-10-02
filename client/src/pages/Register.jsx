@@ -7,6 +7,7 @@ import { SEO } from "../components/common/SEO";
 import { Button } from "../components/common/Button";
 import { ErrorBanner, FieldError, fieldClasses } from "../components/common/ErrorBanner";
 import * as authApi from "../api/auth";
+import { useAuth } from "../hooks/useAuth";
 import { useToast } from "../hooks/useToast";
 import { heroItem } from "../utils/motion";
 
@@ -29,6 +30,7 @@ const initialForm = {
 };
 
 export default function Register() {
+  const { refreshProfile } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -38,6 +40,12 @@ export default function Register() {
   const [submitting, setSubmitting] = useState(false);
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
+
+  const selectUserType = (userType) => {
+    setForm((current) => ({ ...current, user_type: userType }));
+    setFieldErrors({});
+    setFormError("");
+  };
 
   const validate = () => {
     const errors = {};
@@ -55,7 +63,6 @@ export default function Register() {
       if (!form.campus_location.trim()) errors.campus_location = "Enter your campus, e.g. JKUAT Juja.";
     }
     if (form.user_type === "employer" && !form.business_name.trim()) errors.business_name = "Enter your business name.";
-    if (form.user_type === "employer" && !form.business_registration_number.trim()) errors.business_registration_number = "Enter your registration number.";
     if (form.user_type === "employer" && !form.business_location.trim()) errors.business_location = "Enter your business location.";
     if (form.user_type === "employer" && !form.contact_person_name.trim()) errors.contact_person_name = "Enter the contact person's name.";
     if (form.user_type === "employer" && !/^\+?\d{9,15}$/.test(form.contact_person_phone.trim())) errors.contact_person_phone = "Enter a valid phone number.";
@@ -87,8 +94,17 @@ export default function Register() {
         };
         await authApi.registerEmployer(payload);
       } else {
-        await authApi.registerStudent({ ...form, name: form.name.trim(), email: form.email.trim().toLowerCase() });
+        await authApi.registerStudent({
+          name: form.name.trim(),
+          email: form.email.trim().toLowerCase(),
+          password: form.password,
+          phone_number: form.phone_number,
+          university: form.university.trim(),
+          campus_location: form.campus_location.trim(),
+          referral_code: form.referral_code.trim() || undefined,
+        });
       }
+      await refreshProfile();
       toast({ variant: "success", title: "You're in", description: "Welcome to CampusGig Kenya." });
       navigate("/dashboard", { replace: true });
     } catch (err) {
@@ -102,7 +118,7 @@ export default function Register() {
       }
       setFormError(
         err.message ||
-          "Couldn't create your account. Make sure you're using a recognized student email."
+          "Couldn't create your account. Check your details and try again."
       );
     } finally {
       setSubmitting(false);
@@ -113,7 +129,7 @@ export default function Register() {
     <>
       <SEO
         title="Create your account"
-        description="Register with your student email or employer business details to post opportunities and apply for campus work on CampusGig Kenya."
+        description="Create a student or employer account with an email address you can access."
         path="/register"
       />
       <div className="mx-auto flex max-w-md flex-col justify-center px-4 py-16 sm:px-6">
@@ -121,14 +137,14 @@ export default function Register() {
           <h1 className="font-display font-semibold text-fluid-2xl">Join your campus market</h1>
           <p className="mt-2 text-fluid-sm text-text-secondary">
             {form.user_type === "employer"
-              ? "Employers must verify their business email and registration. Once verified, you can post opportunities to Kenyan students."
-              : 'Registration requires a recognized student email — it\'s how everyone else on the platform knows you\'re really a student here.'}
+              ? "Use a personal or business email you can access. Add your business details for review before posting opportunities."
+              : "Use any email address you can access. Add your campus details so people nearby can find and work with you."}
           </p>
 
           <div className="mt-6 flex items-center gap-2 rounded-lg bg-canvas p-1.5 text-sm">
             <button
               type="button"
-              onClick={() => setForm((f) => ({ ...f, user_type: "student" }))}
+              onClick={() => selectUserType("student")}
               className={`flex items-center gap-2 rounded-md px-3 py-2 font-medium transition-all ${
                 form.user_type === "student"
                   ? "bg-brand-500 text-surface shadow-sm"
@@ -139,7 +155,7 @@ export default function Register() {
             </button>
             <button
               type="button"
-              onClick={() => setForm((f) => ({ ...f, user_type: "employer" }))}
+              onClick={() => selectUserType("employer")}
               className={`flex items-center gap-2 rounded-md px-3 py-2 font-medium transition-all ${
                 form.user_type === "employer"
                   ? "bg-brand-500 text-surface shadow-sm"
@@ -163,12 +179,12 @@ export default function Register() {
               />
             </Field>
 
-            <Field label={form.user_type === "employer" ? "Business email" : "Student email"} id="email" error={fieldErrors.email}>
+            <Field label="Email address" id="email" error={fieldErrors.email}>
               <input
                 id="email"
                 type="email"
                 autoComplete="email"
-                placeholder={form.user_type === "employer" ? "you@company.com" : "you@jkuat.ac.ke"}
+                placeholder="you@example.com"
                 value={form.email}
                 onChange={set("email")}
                 className={fieldClasses(Boolean(fieldErrors.email))}
@@ -221,10 +237,6 @@ export default function Register() {
               </div>
             )}
 
-            <Button type="submit" icon={UserPlus} loading={submitting} fullWidth>
-              Create account
-            </Button>
-
             {form.user_type === "employer" && (
               <>
                 <Field label="Business name" id="business_name" error={fieldErrors.business_name}>
@@ -237,7 +249,7 @@ export default function Register() {
                   />
                 </Field>
 
-                <Field label="Business registration number" id="business_registration_number" error={fieldErrors.business_registration_number}>
+                <Field label="Business registration number (optional)" id="business_registration_number" error={fieldErrors.business_registration_number}>
                   <input
                     id="business_registration_number"
                     placeholder="CR 12345"
@@ -278,11 +290,11 @@ export default function Register() {
                   />
                 </Field>
 
-                <Field label="Contact person email" id="contact_person_email" error={fieldErrors.contact_person_email}>
+                <Field label="Contact email" id="contact_person_email" error={fieldErrors.contact_person_email}>
                   <input
                     id="contact_person_email"
                     type="email"
-                    placeholder="contact@company.com"
+                    placeholder="name@example.com"
                     value={form.contact_person_email}
                     onChange={set("contact_person_email")}
                     className={fieldClasses(Boolean(fieldErrors.contact_person_email))}
@@ -317,6 +329,10 @@ export default function Register() {
                 Have a code from a classmate? They'll earn a free boost for referring you.
               </p>
             </div>
+
+            <Button type="submit" icon={UserPlus} loading={submitting} fullWidth>
+              Create account
+            </Button>
           </form>
 
           <p className="mt-6 text-fluid-sm text-text-secondary text-center">

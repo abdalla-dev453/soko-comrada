@@ -3,7 +3,7 @@ import { SEO } from "../components/common/SEO";
 const SECTIONS = [
   {
     heading: "What we collect",
-    body: `When you register, we collect your name, student email, phone number, university, and campus location — the minimum needed to verify you're a real student and to connect you with people on your own campus. When you post or apply to a gig, we store what you write in that listing or application. If you submit an M-Pesa code for a boost or subscription, we store the code and amount to verify the payment.`,
+    body: `When you register, we collect your name, email address, phone number, and the campus or business details you provide. You may use a personal or organization email address. When you post or apply to a gig, we store what you write in that listing or application. If you submit an M-Pesa code for a boost or subscription, we store the code and amount to verify the payment.`,
   },
   {
     heading: "How we use it",

@@ -55,7 +55,7 @@ export default function Home() {
     <>
       <SEO
         title="Comrade Plug — Campus gigs & hustles, sorted"
-        description="Post a task or offer a skill on your campus. Fast, local, and verified by .ac.ke email — no more scrolling five WhatsApp groups."
+        description="Post a task or offer a skill on your campus. Fast, local, and connected to students and employers nearby."
         path="/"
       />
 
@@ -181,11 +181,11 @@ export default function Home() {
               <ShieldCheck className="h-6 w-6 flex-shrink-0 text-success-500" aria-hidden="true" />
               <div>
                 <h3 className="font-display font-semibold text-base text-on-brand">
-                  Verified by student email
+                  Campus-focused accounts
                 </h3>
                 <p className="mt-1 text-sm text-on-brand/70">
-                  Registration is restricted to recognized .ac.ke domains, so you know
-                  who you're dealing with.
+                  Students and employers use reachable email addresses and clear campus
+                  or business details.
                 </p>
               </div>
             </div>

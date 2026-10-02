@@ -58,6 +58,7 @@ export function AuthProvider({ children }) {
   const refreshProfile = useCallback(async () => {
     const me = await authApi.fetchMe();
     setUser(me);
+    setStatus("authenticated");
     return me;
   }, []);
 

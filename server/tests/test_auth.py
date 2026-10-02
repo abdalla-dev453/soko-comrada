@@ -1,4 +1,4 @@
-from tests.conftest import auth_header, register_user
+from tests.conftest import auth_header, register_employer, register_user
 
 
 def test_register_and_login_with_personal_email(client):
@@ -12,6 +12,16 @@ def test_register_and_login_with_personal_email(client):
         json={"email": "amina@gmail.com", "password": "supersecret123"},
     )
     assert login_resp.status_code == 200
+
+
+def test_employer_can_register_with_personal_email(client):
+    resp = register_employer(
+        client,
+        email="employer@gmail.com",
+        contact_person_email="owner@gmail.com",
+    )
+    assert resp.status_code == 201
+    assert resp.get_json()["user"]["email"] == "employer@gmail.com"
 
 def test_register_and_login_flow(client):
     resp = register_user(client)

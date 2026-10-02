@@ -3,7 +3,7 @@ import { SEO } from "../components/common/SEO";
 const SECTIONS = [
   {
     heading: "Who can use ComradePlug",
-    body: `Registration is restricted to students with a recognized university email domain. You must provide accurate information when registering and keep your account details up to date. You're responsible for activity that happens under your account.`,
+    body: `Students and employers may register with a personal or organization email address. You must provide accurate account, campus, and business information and keep your details up to date. You're responsible for activity that happens under your account.`,
   },
   {
     heading: "Posting and applying to gigs",

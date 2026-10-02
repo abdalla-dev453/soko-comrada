@@ -26,7 +26,7 @@ export default function Login() {
 
   const validate = () => {
     const errors = {};
-    if (!form.email.trim()) errors.email = "Enter your student email.";
+    if (!form.email.trim()) errors.email = "Enter your email address.";
     if (!form.password) errors.password = "Enter your password.";
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;

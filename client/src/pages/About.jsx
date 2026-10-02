@@ -54,7 +54,7 @@ export default function About() {
             <Principle
               icon={ShieldCheck}
               title="Verified, not anonymous"
-              body="Registration is gated by student email. A rating that follows you means bad actors can't just make a new account and start over."
+              body="Reachable contact details and a rating that follows each account help everyone know who they're working with."
             />
             <Principle
               icon={Users}
