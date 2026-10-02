@@ -15,7 +15,7 @@ class PortfolioImage(db.Model):
     image_url = db.Column(db.String(500), nullable=False)
     caption = db.Column(db.String(200), nullable=True)
     opportunity_id = db.Column(
-        db.Integer, db.ForeignKey("opportunities.id", ondelete="SET NULL"), nullable=True
+        db.Integer, db.ForeignKey("gigs.id", ondelete="SET NULL"), nullable=True
     )
     created_at = db.Column(
         db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False

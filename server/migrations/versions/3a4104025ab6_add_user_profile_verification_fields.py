@@ -60,9 +60,6 @@ def upgrade():
         batch_op.add_column(sa.Column('deliverables', sa.Text(), nullable=True))
         batch_op.create_index(batch_op.f('ix_gigs_price_type'), ['price_type'], unique=False)
 
-    with op.batch_alter_table('reports', schema=None) as batch_op:
-        batch_op.add_column(sa.Column('auto_generated', sa.Boolean(), nullable=False))
-
     with op.batch_alter_table('users', schema=None) as batch_op:
         batch_op.add_column(sa.Column('hostel_location', sa.String(length=100), nullable=True))
         batch_op.add_column(sa.Column('is_verified_student', sa.Boolean(), nullable=False))
@@ -83,9 +80,6 @@ def downgrade():
         batch_op.drop_column('whatsapp_verified')
         batch_op.drop_column('is_verified_student')
         batch_op.drop_column('hostel_location')
-
-    with op.batch_alter_table('reports', schema=None) as batch_op:
-        batch_op.drop_column('auto_generated')
 
     with op.batch_alter_table('gigs', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_gigs_price_type'))

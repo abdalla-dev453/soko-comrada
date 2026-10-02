@@ -35,9 +35,13 @@ def create_app(env_name: str | None = None) -> Flask:
     )
     limiter.init_app(app)
 
-    # Import models so they're registered on the SQLAlchemy metadata
-    # before migrations or `db.create_all()` run.
+    # Import models so they're registered on the SQLAlchemy metadata.
+    # Some local/dev databases may be stale or empty; create the current model
+    # schema before serving traffic so the website can boot reliably even when
+    # historical migrations have not been run cleanly.
     from app import models  # noqa: F401
+    with app.app_context():
+        db.create_all()
 
     # --- Blueprints ---
     from app.blueprints.auth.routes import auth_bp

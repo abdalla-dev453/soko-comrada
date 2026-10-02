@@ -6,14 +6,14 @@ from app.extensions import db
 
 
 class SavedOpportunity(db.Model):
-    __tablename__ = "saved_opportunities"
+    __tablename__ = "saved_listings"
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(
         db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     opportunity_id = db.Column(
-        db.Integer, db.ForeignKey("opportunities.id", ondelete="CASCADE"), nullable=False
+        db.Integer, db.ForeignKey("gigs.id", ondelete="CASCADE"), nullable=False
     )
     created_at = db.Column(
         db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False

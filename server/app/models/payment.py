@@ -44,7 +44,7 @@ class Payment(db.Model):
         db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     opportunity_id = db.Column(
-        db.Integer, db.ForeignKey("opportunities.id", ondelete="SET NULL"), nullable=True
+        db.Integer, db.ForeignKey("gigs.id", ondelete="SET NULL"), nullable=True
     )
     # Nullable: STK Push has no code until callback, credit never has one
     mpesa_code = db.Column(db.String(15), unique=True, nullable=True, index=True)

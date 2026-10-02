@@ -21,7 +21,7 @@ class Application(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     opportunity_id = db.Column(
-        db.Integer, db.ForeignKey("opportunities.id", ondelete="CASCADE"), nullable=False
+        db.Integer, db.ForeignKey("gigs.id", ondelete="CASCADE"), nullable=False
     )
     applicant_id = db.Column(
         db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False

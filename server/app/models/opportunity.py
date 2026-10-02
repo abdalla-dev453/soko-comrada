@@ -58,7 +58,7 @@ class WorkArrangement(str, enum.Enum):
 
 class Opportunity(db.Model):
     """Alias for Gig — represents an opportunity posted by an employer."""
-    __tablename__ = "opportunities"
+    __tablename__ = "gigs"
 
     id = db.Column(db.Integer, primary_key=True)
     employer_id = db.Column(

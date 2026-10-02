@@ -20,7 +20,7 @@ class Report(db.Model):
         db.Integer, db.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     reported_opportunity_id = db.Column(
-        db.Integer, db.ForeignKey("opportunities.id", ondelete="SET NULL"), nullable=True
+        db.Integer, db.ForeignKey("gigs.id", ondelete="SET NULL"), nullable=True
     )
     reported_user_id = db.Column(
         db.Integer, db.ForeignKey("users.id", ondelete="SET NULL"), nullable=True
