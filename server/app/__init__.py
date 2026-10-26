@@ -52,6 +52,7 @@ def create_app(env_name: str | None = None) -> Flask:
     from app.blueprints.admin.routes import admin_bp
     from app.blueprints.saved_listings.routes import saved_listings_bp
     from app.blueprints.portfolio.routes import portfolio_bp
+    from app.blueprints.messages.routes import messages_bp
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     # Register at both /api/opportunities (new PRD standard) and /api/gigs (legacy)
@@ -63,6 +64,7 @@ def create_app(env_name: str | None = None) -> Flask:
     app.register_blueprint(admin_bp, url_prefix="/api")
     app.register_blueprint(saved_listings_bp, url_prefix="/api/saved")
     app.register_blueprint(portfolio_bp, url_prefix="/api/portfolio")
+    app.register_blueprint(messages_bp, url_prefix="/api/messages")
 
     register_error_handlers(app)
 

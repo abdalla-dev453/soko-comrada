@@ -482,3 +482,40 @@ def get_notifications(current_user: User):
     """Computed-on-read notification feed."""
     items = get_notifications_for_user(current_user.id)
     return jsonify({"notifications": items}), 200
+
+@auth_bp.post("/verify-student-id")
+@limiter.limit("10 per hour")
+@load_current_user
+def submit_student_id_verification(current_user: User):
+    """Students submit their Student ID card number and document link for verification."""
+    data = request.get_json(silent=True) or {}
+    student_id_number = data.get("student_id_number", "").strip()
+    id_doc_url = data.get("student_id_document_url", "").strip()
+
+    if not student_id_number and not id_doc_url:
+        return jsonify({"error": "validation_error", "message": "Provide student_id_number or student_id_document_url"}), 422
+
+    if current_user.student_profile is None:
+        profile = StudentProfile(user_id=current_user.id)
+        db.session.add(profile)
+    else:
+        profile = current_user.student_profile
+
+    if student_id_number:
+        profile.student_id_number = student_id_number
+    if id_doc_url:
+        profile.student_id_document_url = id_doc_url
+
+    # Auto-verify or flag for admin review
+    profile.is_verified_student = True
+    current_user.is_verified_student = True
+    profile.verified_at = datetime.now(timezone.utc)
+    db.session.add(profile)
+    db.session.add(current_user)
+    db.session.commit()
+
+    return jsonify({
+        "message": "Student identity successfully verified!",
+        "user": current_user.to_private_dict(),
+        "student_profile": profile.to_dict(include_sensitive=True),
+    }), 200

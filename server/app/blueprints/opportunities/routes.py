@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 
 from flask import Blueprint, current_app, jsonify, request
 from marshmallow import ValidationError
-from sqlalchemy import case
+from sqlalchemy import case, or_
 
 from app.blueprints.opportunities.schemas import (
     ApplicationCreateSchema,
@@ -46,6 +46,18 @@ def list_opportunities():
     query = Gig.query.filter(
         Gig.status == GigStatus.OPEN, Gig.flagged_for_review.is_(False)
     )
+
+    search_query = request.args.get("q")
+    if search_query and search_query.strip():
+        term = f"%{search_query.strip()}%"
+        query = query.filter(
+            or_(
+                Gig.title.ilike(term),
+                Gig.description.ilike(term),
+                Gig.skills_required.ilike(term),
+                Gig.category.ilike(term),
+            )
+        )
 
     campus = request.args.get("campus")
     if campus:
@@ -90,10 +102,18 @@ def list_opportunities():
     now = datetime.now(timezone.utc)
     is_featured_live = (Gig.is_featured.is_(True)) & (Gig.featured_expires_at > now)
 
-    query = query.order_by(
-        case((is_featured_live, 0), else_=1),
-        Gig.created_at.desc()
-    )
+    sort = request.args.get("sort")
+    if sort == "highest_pay":
+        query = query.order_by(case((is_featured_live, 0), else_=1), Gig.budget.desc().nullslast())
+    elif sort == "closest_deadline":
+        query = query.order_by(case((is_featured_live, 0), else_=1), Gig.deadline.asc().nullslast())
+    elif sort == "oldest":
+        query = query.order_by(case((is_featured_live, 0), else_=1), Gig.created_at.asc())
+    else:
+        query = query.order_by(
+            case((is_featured_live, 0), else_=1),
+            Gig.created_at.desc()
+        )
 
     page = request.args.get("page", default=1, type=int)
     if page < 1 or page > 10_000:
@@ -252,6 +272,16 @@ def apply_to_opportunity(current_user, gig_id: int):
     )
     db.session.add(application)
     db.session.commit()
+
+    # Trigger critical notification / SMS / WhatsApp to the opportunity owner
+    if gig.poster and gig.poster.phone_number:
+        whatsapp_service.notify_new_application(
+            current_app.config,
+            to_phone=gig.poster.phone_number,
+            applicant_name=current_user.name,
+            gig_title=gig.title,
+            logger=current_app.logger,
+        )
 
     return jsonify({"application": application.to_dict()}), 201
 

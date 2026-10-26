@@ -121,3 +121,23 @@ def notify_employer_approved(app_config, *, to_phone, business_name, logger=None
         template_params=[business_name],
         logger=logger,
     )
+
+
+def notify_new_application(app_config, *, to_phone, applicant_name, gig_title, logger=None):
+    return send_whatsapp_message(
+        app_config,
+        to_phone_number=to_phone,
+        template_name="comradeplug_new_application",
+        template_params=[applicant_name, gig_title],
+        logger=logger,
+    )
+
+
+def notify_application_status(app_config, *, to_phone, gig_title, status, logger=None):
+    return send_whatsapp_message(
+        app_config,
+        to_phone_number=to_phone,
+        template_name="comradeplug_application_status",
+        template_params=[gig_title, status],
+        logger=logger,
+    )

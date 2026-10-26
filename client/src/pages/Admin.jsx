@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Wallet, Flag, Check, X, Scale } from "lucide-react";
+import { Wallet, Flag, Check, X, Scale, ShieldCheck } from "lucide-react";
 import clsx from "clsx";
 
 import { SEO } from "../components/common/SEO";
@@ -14,6 +14,8 @@ import {
   fetchReports,
   resolveDispute,
   resolveReport,
+  fetchModerationGigs,
+  moderateGig,
 } from "../api/payments";
 import { formatCurrency } from "../utils/formatCurrency";
 import { useToast } from "../hooks/useToast";
@@ -23,16 +25,19 @@ export default function Admin() {
   const [payments, setPayments] = useState(null);
   const [reports, setReports] = useState(null);
   const [disputes, setDisputes] = useState(null);
+  const [moderations, setModerations] = useState(null);
   const { toast } = useToast();
 
   const loadPayments = () => fetchPendingPayments().then(setPayments).catch(() => setPayments([]));
   const loadReports = () => fetchReports("OPEN").then(setReports).catch(() => setReports([]));
   const loadDisputes = () => fetchDisputes().then(setDisputes).catch(() => setDisputes([]));
+  const loadModeration = () => fetchModerationGigs().then(setModerations).catch(() => setModerations([]));
 
   useEffect(() => {
     loadPayments();
     loadReports();
     loadDisputes();
+    loadModeration();
   }, []);
 
   const handlePaymentDecision = async (paymentId, approve) => {
@@ -90,6 +95,9 @@ export default function Admin() {
           </TabButton>
           <TabButton active={tab === "disputes"} onClick={() => setTab("disputes")} icon={Scale}>
             Disputes {disputes && `(${disputes.length})`}
+          </TabButton>
+          <TabButton active={tab === "moderation"} onClick={() => setTab("moderation")} icon={ShieldCheck}>
+            Listing Moderation {moderations && `(${moderations.length})`}
           </TabButton>
         </div>
 
@@ -194,47 +202,65 @@ export default function Admin() {
           </>
         )}
 
-        {tab === "disputes" && (
+        {tab === "moderation" && (
           <>
-            {disputes === null && <SectionLoader label="Loading disputes…" />}
-            {disputes && disputes.length === 0 && (
+            {moderations === null && <SectionLoader label="Loading listings for moderation…" />}
+            {moderations && moderations.length === 0 && (
               <EmptyState
-                icon={Scale}
-                title="No open disputes"
-                description="Disputed gigs appear here when a completion is contested."
+                icon={ShieldCheck}
+                title="Moderation queue is clear"
+                description="No gigs flagged by automated heuristics or pending review."
               />
             )}
-            {disputes && disputes.length > 0 && (
+            {moderations && moderations.length > 0 && (
               <ul className="flex flex-col gap-3">
-                {disputes.map((gig) => (
+                {moderations.map((g) => (
                   <li
-                    key={gig.id}
+                    key={g.id}
                     className="flex items-start justify-between gap-4 rounded-lg border border-border bg-surface-raised p-4"
                   >
                     <div>
-                      <p className="font-medium text-sm text-ink">{gig.title}</p>
-                      <Link
-                        to={`/gigs/${gig.id}`}
-                        className="text-xs text-ink underline decoration-dotted"
-                      >
-                        View gig #{gig.id}
-                      </Link>
-                      {gig.dispute_reason && (
-                        <p className="mt-1.5 text-xs text-ink-muted italic">
-                          "{gig.dispute_reason}"
+                      <p className="font-medium text-sm text-ink">{g.title}</p>
+                      <p className="text-xs text-ink-muted mt-0.5">
+                        Campus: {g.campus_location} · Budget: {formatCurrency(g.budget)}
+                      </p>
+                      {g.flag_reason && (
+                        <p className="mt-1.5 text-xs text-danger font-medium">
+                          Flag reason: {g.flag_reason}
                         </p>
                       )}
                     </div>
                     <div className="flex flex-shrink-0 gap-2">
-                      <Button size="sm" onClick={() => handleDisputeResolution(gig.id, "COMPLETED")}>
-                        Mark completed
+                      <Button
+                        size="sm"
+                        icon={Check}
+                        onClick={async () => {
+                          try {
+                            await moderateGig(g.id, "APPROVE");
+                            toast({ variant: "success", title: "Listing approved and published live" });
+                            loadModeration();
+                          } catch (err) {
+                            toast({ variant: "error", title: "Action failed", description: err.message });
+                          }
+                        }}
+                      >
+                        Approve
                       </Button>
                       <Button
                         size="sm"
                         variant="danger"
-                        onClick={() => handleDisputeResolution(gig.id, "CANCELLED")}
+                        icon={X}
+                        onClick={async () => {
+                          try {
+                            await moderateGig(g.id, "REJECT", "Violates platform community guidelines.");
+                            toast({ variant: "success", title: "Listing rejected and removed" });
+                            loadModeration();
+                          } catch (err) {
+                            toast({ variant: "error", title: "Action failed", description: err.message });
+                          }
+                        }}
                       >
-                        Cancel gig
+                        Reject
                       </Button>
                     </div>
                   </li>

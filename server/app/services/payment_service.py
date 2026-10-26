@@ -52,8 +52,8 @@ def fee_for_purpose(app_config, purpose: PaymentPurpose) -> float:
         return float(app_config.get("FEATURED_LISTING_FEE_KES", 300))
     if purpose == PaymentPurpose.BOOST:
         return float(app_config["BOOST_FEE_KES"])
-    if purpose == PaymentPurpose.SUBSCRIPTION:
-        return float(app_config["SUBSCRIPTION_FEE_KES"])
+    if purpose == PaymentPurpose.ESCROW:
+        return 0.0  # Dynamic amount determined per gig
     raise PaymentError(f"No configured fee for purpose {purpose.value}.")
 
 
@@ -116,6 +116,7 @@ def initiate_stk_payment(
     purpose: PaymentPurpose,
     gig: Gig | None = None,
     phone_number: str | None = None,
+    custom_amount: float | None = None,
 ) -> Payment:
     """Phase 5: kick off a Daraja STK Push and record a PENDING
     payment correlated by checkout_request_id. The actual VERIFIED
@@ -124,13 +125,21 @@ def initiate_stk_payment(
     PENDING.
     """
     _validate_boost_target(user, purpose, gig)
-    amount = fee_for_purpose(app_config, purpose)
+    if custom_amount is not None and custom_amount > 0:
+        amount = float(custom_amount)
+    else:
+        amount = fee_for_purpose(app_config, purpose)
     target_phone = (phone_number or user.phone_number or "").strip()
     if not target_phone:
         raise PaymentError("We don't have a phone number to send the STK prompt to.")
 
     reference = f"gig{gig.id}" if gig else f"user{user.id}"
-    description = "Comradeplug boost" if purpose == PaymentPurpose.BOOST else "Comradeplug subscription"
+    if purpose == PaymentPurpose.BOOST:
+        description = "Comradeplug boost"
+    elif purpose == PaymentPurpose.ESCROW:
+        description = f"Escrow gig #{gig.id}" if gig else "Escrow deposit"
+    else:
+        description = "Comradeplug payment"
 
     daraja_response = daraja_service.initiate_stk_push(
         app_config,

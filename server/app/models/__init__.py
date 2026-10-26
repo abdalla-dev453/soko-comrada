@@ -18,6 +18,7 @@ from app.models.report import Report, ReportStatus
 from app.models.verification_token import VerificationToken
 from app.models.portfolio_image import PortfolioImage
 from app.models.saved_opportunity import SavedOpportunity
+from app.models.message import Message
 
 # Alias for clarity in PRD context
 OpportunityStatus = GigStatus
@@ -49,4 +50,5 @@ __all__ = [
     "VerificationToken",
     "PortfolioImage",
     "SavedOpportunity",
+    "Message",
 ]
