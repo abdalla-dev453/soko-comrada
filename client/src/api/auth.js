@@ -44,3 +44,11 @@ export async function updateProfile(patch) {
   const data = await apiClient.patch("/auth/me", patch);
   return data.user;
 }
+
+export async function verifyStudentId({ studentIdNumber, studentIdDocumentUrl }) {
+  const data = await apiClient.post("/auth/verify-student-id", {
+    student_id_number: studentIdNumber,
+    student_id_document_url: studentIdDocumentUrl,
+  });
+  return data;
+}

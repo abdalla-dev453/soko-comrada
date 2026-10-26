@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Star, Briefcase, ClipboardList, Wallet, PlusCircle, ShieldCheck, Gift, Copy, Bell, Search } from "lucide-react";
+import { Star, Briefcase, ClipboardList, Wallet, PlusCircle, ShieldCheck, Gift, Copy, Bell, Search, Award } from "lucide-react";
 import clsx from "clsx";
 
 import { SEO } from "../components/common/SEO";
@@ -63,6 +63,12 @@ export default function Dashboard() {
                   {user.avg_rating.toFixed(1)}
                 </span>
               )}
+              {user?.is_verified_student && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-accent-soft px-2 py-0.5 text-xs font-medium text-accent">
+                  <Award className="h-3 w-3" aria-hidden="true" />
+                  Verified student
+                </span>
+              )}
               {user?.is_verified_entrepreneur && (
                 <span className="inline-flex items-center gap-1 rounded-full bg-accent-soft px-2 py-0.5 text-xs font-medium text-accent">
                   <ShieldCheck className="h-3 w-3" aria-hidden="true" />
@@ -95,13 +101,34 @@ export default function Dashboard() {
             )}
           </div>
           <div className="flex flex-wrap gap-2">
+            {!user?.is_verified_student && (
+              <Button
+                variant="secondary"
+                icon={Award}
+                onClick={async () => {
+                  const studentId = prompt("Enter your Student ID / Registration Number (e.g. SCT211-0012/2022):");
+                  if (studentId) {
+                    try {
+                      const { verifyStudentId } = await import("../api/auth");
+                      await verifyStudentId({ studentIdNumber: studentId.trim() });
+                      toast({ variant: "success", title: "Identity Verified", description: "You now have the Verified Student badge!" });
+                      refreshProfile();
+                    } catch (err) {
+                      toast({ variant: "error", title: "Verification failed", description: err.message });
+                    }
+                  }
+                }}
+              >
+                Verify Student ID
+              </Button>
+            )}
             {!user?.is_verified_entrepreneur && (
               <Button variant="secondary" icon={ShieldCheck} onClick={() => setSubscriptionOpen(true)}>
-                Get verified
+                Get verified employer
               </Button>
             )}
             <Button as={Link} to="/gigs/new" icon={PlusCircle}>
-              Post a gig
+              Post an opportunity
             </Button>
           </div>
         </div>

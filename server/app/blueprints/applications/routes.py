@@ -83,8 +83,24 @@ def update_application_status(current_user, application_id: int):
         if gig.is_full():
             gig.status = GigStatus.IN_PROGRESS
         db.session.add(gig)
+        if application.applicant and application.applicant.phone_number:
+            whatsapp_service.notify_application_status(
+                current_app.config,
+                to_phone=application.applicant.phone_number,
+                gig_title=gig.title,
+                status="accepted",
+                logger=current_app.logger,
+            )
     elif new_status == ApplicationStatus.REJECTED:
         application.rejected_at = datetime.now(timezone.utc)
+        if application.applicant and application.applicant.phone_number:
+            whatsapp_service.notify_application_status(
+                current_app.config,
+                to_phone=application.applicant.phone_number,
+                gig_title=gig.title,
+                status="rejected",
+                logger=current_app.logger,
+            )
     elif new_status == ApplicationStatus.COMPLETED:
         application.completed_at = datetime.now(timezone.utc)
 

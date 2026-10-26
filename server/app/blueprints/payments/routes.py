@@ -50,10 +50,12 @@ class StkPushSchema(Schema):
             PaymentPurpose.SUBSCRIPTION.value,
             PaymentPurpose.FEATURED_LISTING.value,
             PaymentPurpose.BOOST.value,
+            PaymentPurpose.ESCROW.value,
         ]),
     )
     gig_id = fields.Int(required=False, allow_none=True, data_key="opportunity_id")
     phone_number = fields.Str(required=False, allow_none=True, validate=validate.Length(max=15))
+    amount = fields.Decimal(required=False, allow_none=True, places=2)
 
 
 class RedeemCreditSchema(Schema):
@@ -132,6 +134,7 @@ def start_stk_push(current_user):
             purpose=purpose,
             gig=gig,
             phone_number=data.get("phone_number"),
+            custom_amount=float(data["amount"]) if data.get("amount") else None,
         )
     except (PaymentError, DarajaError) as err:
         return jsonify({"error": "payment_error", "message": err.message}), err.status_code

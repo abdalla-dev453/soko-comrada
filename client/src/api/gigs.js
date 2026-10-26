@@ -102,3 +102,25 @@ export async function uploadPortfolioImage(payload) {
   const data = await apiClient.post("/portfolio", payload);
   return data.portfolio_image;
 }
+
+
+export async function sendMessage({ opportunityId, recipientId, content, attachmentUrl }) {
+  const data = await apiClient.post("/messages", {
+    opportunity_id: opportunityId,
+    recipient_id: recipientId,
+    content,
+    attachment_url: attachmentUrl,
+  });
+  return data.message;
+}
+
+export async function fetchOpportunityThread(oppId, withUserId) {
+  const query = withUserId ? `?with_user=${withUserId}` : "";
+  const data = await apiClient.get(`/messages/opportunity/${oppId}${query}`);
+  return data.messages;
+}
+
+export async function fetchMessageThreads() {
+  const data = await apiClient.get("/messages/threads");
+  return data.threads;
+}

@@ -65,3 +65,16 @@ export async function resolveDispute(gigId, resolution) {
   const data = await apiClient.post(`/admin/disputes/${gigId}/resolve`, { resolution });
   return data.gig;
 }
+
+export async function fetchModerationGigs() {
+  const data = await apiClient.get("/admin/opportunities/moderation");
+  return data.opportunities;
+}
+
+export async function moderateGig(gigId, status, reason) {
+  const data = await apiClient.post(`/admin/opportunities/${gigId}/moderate`, {
+    status,
+    reason,
+  });
+  return data.opportunity;
+}

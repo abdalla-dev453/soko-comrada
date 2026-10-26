@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { MapPin, MapPinned, Zap, TrendingUp, Star, Flag, ShieldAlert, Clock, AlertOctagon } from "lucide-react";
+import { MapPin, MapPinned, Zap, TrendingUp, Star, Flag, ShieldAlert, Clock, AlertOctagon, MessageSquare } from "lucide-react";
+import { ChatModal } from "../components/chat/ChatModal";
 
 import { SEO } from "../components/common/SEO";
 import { Button } from "../components/common/Button";
@@ -45,6 +46,8 @@ export default function GigDetail() {
   const [reviewOpen, setReviewOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
   const [disputeOpen, setDisputeOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatUser, setChatUser] = useState(null);
 
   const isPoster = gig && user && gig.poster_id === user.id;
 
@@ -245,6 +248,18 @@ export default function GigDetail() {
                 Dispute completion
               </Button>
             )}
+            {isAuthenticated && !isPoster && gig.poster && (
+              <Button
+                variant="secondary"
+                icon={MessageSquare}
+                onClick={() => {
+                  setChatUser(gig.poster);
+                  setChatOpen(true);
+                }}
+              >
+                Message Poster
+              </Button>
+            )}
             {gig.status === "COMPLETED" && isAuthenticated && (
               <Button variant="secondary" onClick={() => setReviewOpen(true)}>
                 Leave a review
@@ -292,7 +307,18 @@ export default function GigDetail() {
                         <p className="mt-1 text-xs text-ink-muted">Status: {app.status}</p>
                       </div>
                       {app.status === "PENDING" && (
-                        <div className="flex flex-shrink-0 gap-2">
+                        <div className="flex flex-shrink-0 gap-2 items-center">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            icon={MessageSquare}
+                            onClick={() => {
+                              setChatUser(app.applicant);
+                              setChatOpen(true);
+                            }}
+                          >
+                            Chat
+                          </Button>
                           <Button size="sm" onClick={() => handleDecision(app.id, "ACCEPTED")}>
                             Accept
                           </Button>
@@ -304,6 +330,19 @@ export default function GigDetail() {
                             Reject
                           </Button>
                         </div>
+                      )}
+                      {app.status !== "PENDING" && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          icon={MessageSquare}
+                          onClick={() => {
+                            setChatUser(app.applicant);
+                            setChatOpen(true);
+                          }}
+                        >
+                          Chat
+                        </Button>
                       )}
                     </li>
                   ))}
@@ -396,6 +435,14 @@ export default function GigDetail() {
         onClose={() => setDisputeOpen(false)}
         gigId={gig.id}
         onDisputed={load}
+      />
+
+      <ChatModal
+        open={chatOpen}
+        onClose={() => setChatOpen(false)}
+        opportunityId={gig.id}
+        opportunityTitle={gig.title}
+        otherUser={chatUser}
       />
     </>
   );
